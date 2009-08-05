@@ -96,8 +96,8 @@ void WebPage::javaScriptConsoleMessage(const QString& message, int lineNumber, c
 class Crawler : public QObject {
     Q_OBJECT
 public:
-    Crawler()
-        : m_startUrl(QLatin1String("http://www.digg.com"))
+    Crawler(const QString& startUrl)
+        : m_startUrl(startUrl)
         , m_webView(0)
     {}
 
@@ -192,7 +192,9 @@ int main(int argc, char **argv)
     QWebView *view = new QWebView;
     view->setPage(new WebPage(view));
 
-    Crawler crawler;
+    qWarning() << arguments;
+
+    Crawler crawler(arguments.size() >= 2 ? arguments.at(1) : QLatin1String("http://www.digg.com"));
     view->show();
     crawler.setView(view);
     crawler.start();
