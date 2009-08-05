@@ -1,0 +1,8 @@
+Makefile*
+*.o
+moc_*
+*.moc
+tst_loading
+tst_painting
+*.sw?
+robustness/robustness

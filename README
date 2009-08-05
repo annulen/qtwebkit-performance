@@ -1,0 +1,29 @@
+= QtWebKit benchmarks =
+
+== What ==
+
+These benchmarks will test loading speed and drawing speed of single
+pages. Real webcontent will be used to do these tests.
+
+== How ==
+
+We have some copies of real world websites. These can be served with
+
+a fake server. This is requiring the following changes to
+    /etc/hosts:
+
+== Tests ==
+
+=== Loading ===
+
+Load webpages and wait for the completion. The time it takes to
+load all of them will be printed.
+
+=== Painting ===
+
+Painting will load the page and then paint.
+
+=== Robustness ===
+
+Open a webpage, pick a random link, load it, do that forever. This
+will provoke failures in QtWebKit we can attempt to analyze.
