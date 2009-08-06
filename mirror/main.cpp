@@ -129,7 +129,7 @@ int main(int argc, char **argv)
      * iniialize tables... for the poor
      */
     QSqlQuery query("CREATE TABLE IF NOT EXISTS responses(operation int NOT NULL,"
-                                                          "response int",
+                                                          "response int, "
                                                           "url blob NOT NULL UNIQUE,"
                                                           "data blob, header blob)");
 
