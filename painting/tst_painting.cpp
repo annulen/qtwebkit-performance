@@ -97,7 +97,6 @@ void tst_Painting::paint()
 
     /* force a layout */
     QWebFrame* mainFrame = m_page->mainFrame();
-    mainFrame->scroll(640, 0);
     mainFrame->toPlainText();
 
     QPixmap pixmap(m_page->viewportSize());
