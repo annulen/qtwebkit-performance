@@ -77,7 +77,7 @@ void NetworkReplyObserver::slotFinished()
 
     QSqlQuery query("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");
     query.bindValue(":op", m_reply->operation());
-    query.bindValue(":responses", m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute));
+    query.bindValue(":response", m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute));
     query.bindValue(":url", m_reply->url());
     query.bindValue(":data", m_internalData);
     query.bindValue(":header", httpHeader);
