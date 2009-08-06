@@ -98,6 +98,8 @@ void NetworkReplyObserver::slotFinished()
         if (m_internalData != select.value(0))
             qWarning() << "Data is different, not storing it for: " << m_reply->url();
     }
+
+    exit(0);
 }
 
 class NetworkAccessManagerProxy : public QNetworkAccessManager {
@@ -140,7 +142,6 @@ int main(int argc, char **argv)
 
     QWebView* view = new QWebView;
     QWebPage* page = new QWebPage(view);
-    QObject::connect(page, SIGNAL(loadFinished(bool)), &app, SLOT(quit()), Qt::QueuedConnection);
 
     view->setPage(page);
     view->page()->setNetworkAccessManager(new NetworkAccessManagerProxy);
