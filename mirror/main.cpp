@@ -75,8 +75,9 @@ void NetworkReplyObserver::slotFinished()
     foreach(QByteArray header, headers)
         httpHeader += header + ": " + m_reply->rawHeader(header) + "\r\n";
 
-    QSqlQuery query("INSERT INTO responses(operation, url, data, header) VALUES(:op, :url, :data, :header)");
+    QSqlQuery query("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");
     query.bindValue(":op", m_reply->operation());
+    query.bindValue(":responses", m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute));
     query.bindValue(":url", m_reply->url());
     query.bindValue(":data", m_internalData);
     query.bindValue(":header", httpHeader);
@@ -128,6 +129,7 @@ int main(int argc, char **argv)
      * iniialize tables... for the poor
      */
     QSqlQuery query("CREATE TABLE IF NOT EXISTS responses(operation int NOT NULL,"
+                                                          "response int",
                                                           "url blob NOT NULL UNIQUE,"
                                                           "data blob, header blob)");
 
