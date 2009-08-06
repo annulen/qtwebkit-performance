@@ -20,16 +20,17 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         uri = create_uri(self.headers, self.path)
 
         global connection
-        cur = connection.execute("select header, data from responses where url = ?", (uri,))
+        cur = connection.execute("select response, header, data from responses where url = ?", (uri,))
         for row in cur:
-            headers = row[0]
-            data = row[1]
+            response = int(row[0])
+            headers = row[1]
+            data = row[2]
 
             if not headers and not data:
                 return self.send_error(404, "Test server is broken??? '%s' '%s'" % (self.path, uri))
 
             # take the header apart to let it put together..
-            self.send_response(200)
+            self.send_response(response)
             for header in str(headers).split("\r\n"):
                 if not header:
                     break
