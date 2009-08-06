@@ -2,13 +2,13 @@
 # Websites we want to mirror
 
 # English
-WEBSITES="http://us.yahoo.com http://us.google.com"
+WEBSITES="http://us.yahoo.com http://google.com/ncr"
 
 # shopping
 WEBSITES="$WEBSITES http://amazon.com http://ebay.com"
 
 # news sites
-WEBSITES="$WEBSITES http://bbc.co.uk http://www.guardian.co.uk http://us.google.com/news http://news.yahoo.com"
+WEBSITES="$WEBSITES http://bbc.co.uk http://www.guardian.co.uk http://google.com/news/?hl=en http://news.yahoo.com"
 
 # English entertainment
 WEBSITES="$WEBSITES http://flickr.com http://www.youtube.com/?hl=en_US http://myspace.com http://www.twitter.com"
