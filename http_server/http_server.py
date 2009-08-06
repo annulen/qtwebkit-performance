@@ -35,7 +35,13 @@ class HTTPHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                     break
 
                 split = header.split(':', 1)
-                self.send_header(split[0][:-1], split[1])
+
+                # Skip gzip compression for now, slightly screwing us on benchmarks
+                if split[0].lower().startswith("content-encoding"):
+                    continue
+
+                print "sending header", split[0]
+                self.send_header(split[0], split[1].strip())
 
             self.end_headers()
             self.wfile.write(data)
