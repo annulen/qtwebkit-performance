@@ -109,7 +109,8 @@ HttpRequestThread::~HttpRequestThread()
 bool HttpRequestThread::search(const QByteArray& req, QByteArray& response,
                                QByteArray& headers, QByteArray& data)
 {
-    QSqlQuery query("SELECT response, header, data from responses where url = ?");
+    QSqlQuery query;
+    query.prepare("SELECT response, header, data from responses where url = ?");
     query.addBindValue(QString::fromLatin1(req));
 
     if (!query.exec()) {
@@ -230,7 +231,7 @@ int main(int argc, char** argv)
 
     QTcpServer* server = new HttpServer(&app);
     if (!server->listen(QHostAddress::Any, 80))
-        qCritical() << "Failed to listen";
+        qFatal("Failed to listen");
 
     QByteArray response, headers, data;
     qWarning() << "Foo " << HttpRequestThread::search("http://www.google.com/", response, headers, data);
