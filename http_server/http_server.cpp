@@ -104,7 +104,6 @@ HttpRequestThread::HttpRequestThread(int fd)
 
 HttpRequestThread::~HttpRequestThread()
 {
-    delete m_socket;
 }
 
 bool HttpRequestThread::search(const QByteArray& req, QByteArray& response,
@@ -142,10 +141,10 @@ HttpRequest HttpRequestThread::parseHeader()
             if (firstLine) {
                 firstLine = false;
 
-                if (line.toLower().startsWith("get ") && line.contains("HTTP/1.1")) {
+                if (line.toLower().startsWith("get ") && line.contains("HTTP/1.")) {
                     static const unsigned get_length = sizeof "get " - 1;
 
-                    req.path = line.mid(get_length, line.lastIndexOf("HTTP/1.1") - get_length - 1);
+                    req.path = line.mid(get_length, line.lastIndexOf("HTTP/1.") - get_length - 1);
                     req.request = HttpRequest::Request_GET;
                 } else {
                     qWarning("Unhandled operation: %p '%s'", this, line.data());
@@ -210,6 +209,7 @@ void HttpRequestThread::run()
     sendFile(parseHeader());
     m_socket->flush();
     m_socket->disconnectFromHost();
+    delete m_socket;
     qWarning() << "<= Closing down" << this;
 }
 
