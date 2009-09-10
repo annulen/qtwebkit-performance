@@ -33,6 +33,6 @@ WEBSITES="$WEBSITES http://naver.com http://kr.yahoo.com http://www.google.co.kr
 
 for website in $WEBSITES;
 do
-    echo "Mirroring $1 $website"
-    ./mirror $website
+    echo "Mirroring $@ $website"
+    ./mirror $@ $website
 done
