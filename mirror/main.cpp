@@ -39,6 +39,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
+#include "cookiejar.h"
+
 /**
  * simple observer to get the metadata and content
  */
@@ -103,6 +105,12 @@ void NetworkReplyObserver::slotFinished()
 class NetworkAccessManagerProxy : public QNetworkAccessManager {
     Q_OBJECT
 public:
+    NetworkAccessManagerProxy(QNetworkCookieJar* jar)
+        : QNetworkAccessManager()
+    {
+        setCookieJar(jar);
+    }
+
     virtual QNetworkReply* createRequest(Operation op, const QNetworkRequest& request,
                                          QIODevice *outgoingData)
     {
@@ -139,16 +147,29 @@ int main(int argc, char **argv)
                                                           "url blob NOT NULL UNIQUE,"
                                                           "data blob, header blob)");
 
+    CookieJar jar;
     QStringList args = app.arguments();
+    int urlPos = 1;
+
+    if (args.contains("-c")) {
+        bool loaded = jar.load(args.at(2));
+        qWarning("Loading jar from: %s %d", qPrintable(args.at(2)), loaded);
+        urlPos = 3;
+    }
+
     QUrl url("http://www.google.com/news");
-    if (args.count() > 1)
-        url = args.at(1);
+    if (args.count() > urlPos) {
+        url = args.at(urlPos);
+        qWarning() << "Using url: " << url;
+    }
+
+    
 
     QWebView* view = new QWebView;
     QWebPage* page = new QWebPage(view);
 
     view->setPage(page);
-    view->page()->setNetworkAccessManager(new NetworkAccessManagerProxy);
+    view->page()->setNetworkAccessManager(new NetworkAccessManagerProxy(&jar));
     QObject::connect(view, SIGNAL(loadFinished(bool)),
                      view->page()->networkAccessManager(), SLOT(allLoaded()));
 
