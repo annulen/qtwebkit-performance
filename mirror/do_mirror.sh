@@ -19,6 +19,14 @@ WEBSITES="$WEBSITES http://hi5.com http://www.dailymotion.com"
 WEBSITES="$WEBSITES http://youporn.com"
 
 
+# From the top 50 of alexa.com
+WEBSITES="$WEBSITES http://www.microsoft.com http://www.live.com http://www.wikipedia.org http://en.wikipedia.org"
+WEBSITES="$WEBSITES http://www.wordpress.com http://www.rapidshare.com http://www.blogger.com http://www.bing.com"
+WEBSITES="$WEBSITES http://www.imdb.com http://www.linkedin.com"
+
+# some hand picked favorites
+WEBSITES="$WEBSITES http://en.wikipedia.org/wiki/Maxwell_equations"
+
 # Korean pages
 WEBSITES="$WEBSITES http://naver.com http://kr.yahoo.com http://www.google.co.kr/ http://www.auction.co.kr http://www.youtube.com/?hl=ko-KR"
 
