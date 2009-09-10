@@ -38,6 +38,7 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlError>
 
 #include "cookiejar.h"
 
@@ -77,17 +78,27 @@ void NetworkReplyObserver::slotFinished()
     foreach(QByteArray header, headers)
         httpHeader += header + ": " + m_reply->rawHeader(header) + "\r\n";
 
-    QSqlQuery query("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");
+    if(m_reply->error() != QNetworkReply::NoError) {
+        qWarning() << "Error with: " << m_reply->url() << m_reply->error();
+        return;
+    }
+
+    qWarning() << m_reply->operation() << m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                << m_reply->url() << m_internalData.count() << httpHeader.count();
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");
     query.bindValue(":op", m_reply->operation());
     query.bindValue(":response", m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute));
-    query.bindValue(":url", m_reply->url());
+    query.bindValue(":url", m_reply->url().toString());
     query.bindValue(":data", m_internalData);
     query.bindValue(":header", httpHeader);
-    query.exec();
 
     // verify that the old and new data re the same...
     if (!query.exec()) {
-        QSqlQuery select("SELECT data, header FROM responses WHERE url = :url");
+        qWarning() << query.lastError();
+        QSqlQuery select;
+        select.prepare("SELECT data, header FROM responses WHERE url = :url");
         select.bindValue(":url", m_reply->url());
         if (!select.exec()) {
             qWarning() << "Unknown issue for storing: " << m_reply->url();
@@ -142,10 +153,12 @@ int main(int argc, char **argv)
     /*
      * iniialize tables... for the poor
      */
-    QSqlQuery query("CREATE TABLE IF NOT EXISTS responses(operation int NOT NULL,"
+    QSqlQuery query;
+    if (!query.exec("CREATE TABLE IF NOT EXISTS responses(operation int,"
                                                           "response int, "
                                                           "url blob NOT NULL UNIQUE,"
-                                                          "data blob, header blob)");
+                                                          "data blob, header blob)"))
+        qFatal("Creating the table failed...");
 
     CookieJar jar;
     QStringList args = app.arguments();
