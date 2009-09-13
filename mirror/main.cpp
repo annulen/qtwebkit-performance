@@ -238,7 +238,7 @@ int main(int argc, char **argv)
         qCritical() << "Failed to open the crawl db";
 
     /*
-     * iniialize tables... for the poor
+     * initialize tables... for the poor
      */
     QSqlQuery query;
     if (!query.exec("CREATE TABLE IF NOT EXISTS responses(operation int,"
