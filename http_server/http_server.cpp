@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QStringList>
 #include <QThread>
+#include <QUrl>
 #include <QVariant>
 
 #include <QTcpSocket>
@@ -63,6 +64,7 @@ public:
     HttpRequestThread(int socket);
     ~HttpRequestThread();
 
+    static bool lookup(const QByteArray&, QByteArray&, QByteArray&, QByteArray&);
     static bool search(const QByteArray&, QByteArray& response,
                        QByteArray& header, QByteArray& data);
 
@@ -104,6 +106,16 @@ HttpRequestThread::HttpRequestThread(int fd)
 
 HttpRequestThread::~HttpRequestThread()
 {
+}
+
+bool HttpRequestThread::lookup(const QByteArray& req, QByteArray& response,
+                               QByteArray& headers, QByteArray& data)
+{
+    if (search(req, response, headers, data))
+        return true;
+
+    QUrl url = QUrl::fromEncoded(req);
+    return search(url.toEncoded(QUrl::RemoveFragment | QUrl::RemoveQuery), response, headers, data); 
 }
 
 bool HttpRequestThread::search(const QByteArray& req, QByteArray& response,
@@ -178,7 +190,9 @@ bool HttpRequestThread::sendFile(const HttpRequest& req)
 
 
     QByteArray response, headers, data;
-    if (!search(req.uri, response, headers, data)) {
+
+    // try the normal uri first, then strip fragment and query
+    if (!lookup(req.uri, response, headers, data)) {
         qWarning("Searching failed: %p '%s'\n", this, req.uri.data());
         return send404("Not found");
     }
