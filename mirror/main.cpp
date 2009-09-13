@@ -167,7 +167,11 @@ void NetworkReplyProxy::writeData()
         return;
     }
 
-    writeData(m_reply->url().toString(), m_data, httpHeader, operation(), attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+    const QString origUrl = m_reply->url().toString();
+    const QString strippedUrl = m_reply->url().toString(QUrl::RemoveFragment | QUrl::RemoveQuery);
+    writeData(origUrl, m_data, httpHeader, operation(), attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+    if (origUrl != strippedUrl)
+        writeData(strippedUrl, m_data, httpHeader, operation(), attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
 }
 
 void NetworkReplyProxy::writeData(const QString& url, const QByteArray& data, const QByteArray& header, int operation, int response)
