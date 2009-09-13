@@ -185,14 +185,15 @@ bool HttpRequestThread::sendFile(const HttpRequest& req)
 
     m_socket->write("HTTP/1.1 " + response + " OK\r\n");
     foreach (const QByteArray& header, headers.split('\n')) {
-        // skip gzip for now
-        if (header.toLower().startsWith("content-encoding: "))
+        // skip gzip for now and content length...
+        if (header.toLower().startsWith("content-encoding: ") || header.toLower().startsWith("content-length:"))
             continue;
         m_socket->write(header);
-        m_socket->write("\n");
     }
+    m_socket->write("content-length: " + QByteArray::number(data.size()) + "\n");
+    m_socket->write("\n");
+
     m_socket->write(data);
-    m_socket->write("\r\n");
     return true;
 }
 
@@ -210,6 +211,7 @@ void HttpRequestThread::run()
     sendFile(parseHeader());
     m_socket->flush();
     m_socket->disconnectFromHost();
+    m_socket->waitForDisconnected();
     delete m_socket;
     qWarning() << "<= Closing down" << this;
 }
