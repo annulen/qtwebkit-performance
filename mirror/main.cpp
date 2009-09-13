@@ -249,29 +249,36 @@ int main(int argc, char **argv)
 
     CookieJar jar;
     QStringList args = app.arguments();
-    int urlPos = 1;
-
-    if (args.contains("-c")) {
-        bool loaded = jar.load(args.at(2));
-        qWarning("Loading jar from: %s %d", qPrintable(args.at(2)), loaded);
-        urlPos = 3;
-    }
-
     QUrl url("http://www.google.com/news");
-    if (args.count() > urlPos) {
-        url = args.at(urlPos);
-        qWarning() << "Using url: " << url;
+    bool keepRunning = false;
+
+    for (int i = 0; i < args.size(); ++i) {
+        const QString& arg = args[i];
+
+        if (arg == QLatin1String("-c") && i + 1< args.size()) {
+            bool loaded = jar.load(args.at(i + 1));
+            qWarning("Loading jar from: %s %d", qPrintable(args.at(i + 1)), loaded);
+        } else if (arg == QLatin1String("-k")) {
+            keepRunning = true;
+        } else {
+            url = arg;
+        }
     }
 
-    
+    qWarning() << "Using url: " << url;
+
 
     QWebView* view = new QWebView;
     QWebPage* page = new QWebPage(view);
 
     view->setPage(page);
     view->page()->setNetworkAccessManager(new NetworkAccessManagerProxy(&jar));
-    QObject::connect(view, SIGNAL(loadFinished(bool)),
-                     view->page()->networkAccessManager(), SLOT(allLoaded()));
+
+    /* continue mode for the poor */
+    if (!keepRunning) {
+        QObject::connect(view, SIGNAL(loadFinished(bool)),
+                        view->page()->networkAccessManager(), SLOT(allLoaded()));
+    }
 
     view->load(url);
 
