@@ -145,9 +145,11 @@ public Q_SLOTS:
         m_buffer += data;
         emit readyRead();
     }
-    void writeData();
 
 private:
+    void writeData();
+    static void writeData(const QString& url, const QByteArray& data, const QByteArray& header, int operation, int response);
+
     QNetworkReply* m_reply;
     QByteArray m_data;
     QByteArray m_buffer;
@@ -155,9 +157,6 @@ private:
 
 void NetworkReplyProxy::writeData()
 {
-    static int dumpId = -1;
-    qWarning("Writing result for: %p %s data size: %u dumpId: %u", this, qPrintable(m_reply->url().toString()), m_data.size(), ++dumpId);
-
     QByteArray httpHeader;
     QList<QByteArray> headers = rawHeaderList();
     foreach(QByteArray header, headers)
@@ -168,34 +167,42 @@ void NetworkReplyProxy::writeData()
         return;
     }
 
+    writeData(m_reply->url().toString(), m_data, httpHeader, operation(), attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+}
+
+void NetworkReplyProxy::writeData(const QString& url, const QByteArray& data, const QByteArray& header, int operation, int response)
+{
+    static int dumpId = -1;
+    qWarning("Writing result for: %s data size: %u dumpId: %u", qPrintable(url), data.size(), ++dumpId);
+
     QSqlQuery query;
     query.prepare("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");
-    query.bindValue(":op", operation());
-    query.bindValue(":response", attribute(QNetworkRequest::HttpStatusCodeAttribute));
-    query.bindValue(":url", url().toString());
-    query.bindValue(":data", m_data);
-    query.bindValue(":header", httpHeader);
+    query.bindValue(":op", operation);
+    query.bindValue(":response", response);
+    query.bindValue(":url", url);
+    query.bindValue(":data", data);
+    query.bindValue(":header", header);
 
     // verify that the old and new data re the same...
     if (!query.exec()) {
-        qWarning() << "\tInsert into failed with:" << this << query.lastError();
+        qWarning() << "\tInsert into failed with:" << query.lastError();
         QSqlQuery select;
         select.prepare("SELECT data, header FROM responses WHERE url = :url");
-        select.bindValue(":url", url().toString());
+        select.bindValue(":url", url);
         if (!select.exec()) {
-            qWarning() << "\tUnknown issue for storing: " << this << url() << select.lastError();
+            qWarning() << "\tUnknown issue for storing: " << url << select.lastError();
             return;
         }
 
         select.next();
-        if (httpHeader != select.value(1))
-            qWarning() << "\tHeaders are different, not storing them for: " << url();
-        if (m_data != select.value(0))
-            qWarning() << "\tData is different, not storing it for: " << url();
+        if (header != select.value(1))
+            qWarning() << "\tHeaders are different, not storing them for: " << url;
+        if (data != select.value(0))
+            qWarning() << "\tData is different, not storing it for: " << url;
     } else {
         QFile file(QString("dump.%1").arg(dumpId));
         file.open(QFile::WriteOnly | QFile::Truncate);
-        file.write(m_data);
+        file.write(data);
         file.close();
     }
 }
