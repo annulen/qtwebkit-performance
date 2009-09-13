@@ -148,7 +148,7 @@ public Q_SLOTS:
 
 private:
     void writeData();
-    static void writeData(const QString& url, const QByteArray& data, const QByteArray& header, int operation, int response);
+    static void writeData(const QByteArray& url, const QByteArray& data, const QByteArray& header, int operation, int response);
 
     QNetworkReply* m_reply;
     QByteArray m_data;
@@ -167,17 +167,17 @@ void NetworkReplyProxy::writeData()
         return;
     }
 
-    const QString origUrl = m_reply->url().toString();
-    const QString strippedUrl = m_reply->url().toString(QUrl::RemoveFragment | QUrl::RemoveQuery);
+    const QByteArray origUrl = m_reply->url().toEncoded();
+    const QByteArray strippedUrl = m_reply->url().toEncoded(QUrl::RemoveFragment | QUrl::RemoveQuery);
     writeData(origUrl, m_data, httpHeader, operation(), attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
     if (origUrl != strippedUrl)
         writeData(strippedUrl, m_data, httpHeader, operation(), attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
 }
 
-void NetworkReplyProxy::writeData(const QString& url, const QByteArray& data, const QByteArray& header, int operation, int response)
+void NetworkReplyProxy::writeData(const QByteArray& url, const QByteArray& data, const QByteArray& header, int operation, int response)
 {
     static int dumpId = -1;
-    qWarning("Writing result for: %s data size: %u dumpId: %u", qPrintable(url), data.size(), ++dumpId);
+    qWarning("Writing result for: %s data size: %u dumpId: %u", url.constData(), data.size(), ++dumpId);
 
     QSqlQuery query;
     query.prepare("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");

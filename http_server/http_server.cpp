@@ -123,7 +123,7 @@ bool HttpRequestThread::search(const QByteArray& req, QByteArray& response,
 {
     QSqlQuery query;
     query.prepare("SELECT response, header, data from responses where url = ?");
-    query.addBindValue(QString::fromLatin1(req));
+    query.addBindValue(req);
 
     if (!query.exec()) {
         qWarning() << "Query failed: " << query.lastError();
