@@ -33,6 +33,7 @@
 #include <QWebSettings>
 
 #include <QDebug>
+#include <QFile>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QNetworkReply>
 
@@ -43,73 +44,159 @@
 #include "cookiejar.h"
 
 /**
- * simple observer to get the metadata and content
+ * A proxy for the QNetworkReply...
  */
-class NetworkReplyObserver : public QObject {
+class NetworkReplyProxy : public QNetworkReply {
     Q_OBJECT
 public:
-    NetworkReplyObserver(QNetworkReply* reply)
-        : QObject(reply)
+    NetworkReplyProxy(QObject* parent, QNetworkReply* reply)
+        : QNetworkReply(parent)
         , m_reply(reply)
     {
-        connect(m_reply, SIGNAL(readyRead()), SLOT(slotRead()));
-        connect(m_reply, SIGNAL(finished()), SLOT(slotFinished()));
+        qWarning("Starting network job: %p %s", this, qPrintable(m_reply->url().toString()));
+        // apply attributes...
+        setOperation(m_reply->operation());
+        setRequest(m_reply->request());
+        setUrl(m_reply->url());
+
+        // handle these to forward
+        connect(m_reply, SIGNAL(metaDataChanged()), SLOT(applyMetaData()));
+        connect(m_reply, SIGNAL(readyRead()), SLOT(readInternal()));
+        connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(errorInternal(QNetworkReply::NetworkError)));
+
+        // forward signals
+        connect(m_reply, SIGNAL(finished()), SIGNAL(finished()));
+        connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)), SIGNAL(uploadProgress(qint64,qint64)));
+        connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), SIGNAL(downloadProgress(qint64,qint64)));
+
+        // for the data proxy...
+        setOpenMode(ReadOnly);
     }
 
-private Q_SLOTS:
-    void slotRead();
-    void slotFinished();
+    ~NetworkReplyProxy()
+    {
+        writeData();
+        delete m_reply;
+    }
+
+    // virtual  methids
+    void abort() { m_reply->abort(); }
+    void close() { m_reply->close(); }
+    bool isSequential() const { return m_reply->isSequential(); }
+
+    // not possible...
+    void setReadBufferSize(qint64 size) { QNetworkReply::setReadBufferSize(size); m_reply->setReadBufferSize(size); }
+
+    // ssl magic is not done....
+    // isFinished()/isRunning can not be done *sigh*
+
+
+    // QIODevice proxy...
+    virtual qint64 bytesAvailable() const
+    {
+        return m_buffer.size() + QIODevice::bytesAvailable();
+    }
+
+    virtual qint64 bytesToWrite() const { return -1; }
+    virtual bool canReadLine() const { qFatal("not implemented"); return false; }
+
+    virtual bool waitForReadyRead(int) { qFatal("not implemented"); return false; }
+    virtual bool waitForBytesWritten(int) { qFatal("not implemented"); return false; }
+
+    virtual qint64 readData(char* data, qint64 maxlen)
+    {
+        qint64 size = qMin(maxlen, qint64(m_buffer.size()));
+        memcpy(data, m_buffer.constData(), size);
+        m_buffer.remove(0, size);
+        return size;
+    }
+public Q_SLOTS:
+    void ignoreSslErrors() { m_reply->ignoreSslErrors(); }
+    void applyMetaData() {
+        QList<QByteArray> headers = m_reply->rawHeaderList();
+        foreach(QByteArray header, headers)
+            setRawHeader(header, m_reply->rawHeader(header));
+
+        setHeader(QNetworkRequest::ContentTypeHeader, m_reply->header(QNetworkRequest::ContentTypeHeader));
+        setHeader(QNetworkRequest::ContentLengthHeader, m_reply->header(QNetworkRequest::ContentLengthHeader));
+        setHeader(QNetworkRequest::LocationHeader, m_reply->header(QNetworkRequest::LocationHeader));
+        setHeader(QNetworkRequest::LastModifiedHeader, m_reply->header(QNetworkRequest::LastModifiedHeader));
+        setHeader(QNetworkRequest::SetCookieHeader, m_reply->header(QNetworkRequest::SetCookieHeader));
+
+        setAttribute(QNetworkRequest::HttpStatusCodeAttribute, m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute));
+        setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, m_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute));
+        setAttribute(QNetworkRequest::RedirectionTargetAttribute, m_reply->attribute(QNetworkRequest::RedirectionTargetAttribute));
+        setAttribute(QNetworkRequest::ConnectionEncryptedAttribute, m_reply->attribute(QNetworkRequest::ConnectionEncryptedAttribute));
+        setAttribute(QNetworkRequest::CacheLoadControlAttribute, m_reply->attribute(QNetworkRequest::CacheLoadControlAttribute));
+        setAttribute(QNetworkRequest::CacheSaveControlAttribute, m_reply->attribute(QNetworkRequest::CacheSaveControlAttribute));
+        setAttribute(QNetworkRequest::SourceIsFromCacheAttribute, m_reply->attribute(QNetworkRequest::SourceIsFromCacheAttribute));
+        setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, m_reply->attribute(QNetworkRequest::DoNotBufferUploadDataAttribute));
+        emit metaDataChanged();
+    }
+    void errorInternal(QNetworkReply::NetworkError _error)
+    {
+        setError(_error, errorString());
+        emit error(_error);
+    }
+    void readInternal()
+    {
+        QByteArray data = m_reply->readAll();
+        m_data += data;
+        m_buffer += data;
+        emit readyRead();
+    }
+    void writeData();
 
 private:
     QNetworkReply* m_reply;
-    QByteArray m_internalData;
+    QByteArray m_data;
+    QByteArray m_buffer;
 };
 
-void NetworkReplyObserver::slotRead()
+void NetworkReplyProxy::writeData()
 {
-    QByteArray data = m_reply->peek(m_reply->bytesAvailable());
-    m_internalData += data;
-}
+    static int dumpId = -1;
+    qWarning("Writing result for: %p %s data size: %u dumpId: %u", this, qPrintable(m_reply->url().toString()), m_data.size(), ++dumpId);
 
-void NetworkReplyObserver::slotFinished()
-{
     QByteArray httpHeader;
-    QList<QByteArray> headers = m_reply->rawHeaderList();
+    QList<QByteArray> headers = rawHeaderList();
     foreach(QByteArray header, headers)
-        httpHeader += header + ": " + m_reply->rawHeader(header) + "\r\n";
+        httpHeader += header + ": " + rawHeader(header) + "\r\n";
 
     if(m_reply->error() != QNetworkReply::NoError) {
-        qWarning() << "Error with: " << m_reply->url() << m_reply->error();
+        qWarning() << "\tError with: " << this << url() << error();
         return;
     }
 
-    qWarning() << m_reply->operation() << m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
-                << m_reply->url() << m_internalData.count() << httpHeader.count();
-
     QSqlQuery query;
     query.prepare("INSERT INTO responses(operation, response, url, data, header) VALUES(:op, :response, :url, :data, :header)");
-    query.bindValue(":op", m_reply->operation());
-    query.bindValue(":response", m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute));
-    query.bindValue(":url", m_reply->url().toString());
-    query.bindValue(":data", m_internalData);
+    query.bindValue(":op", operation());
+    query.bindValue(":response", attribute(QNetworkRequest::HttpStatusCodeAttribute));
+    query.bindValue(":url", url().toString());
+    query.bindValue(":data", m_data);
     query.bindValue(":header", httpHeader);
 
     // verify that the old and new data re the same...
     if (!query.exec()) {
-        qWarning() << query.lastError();
+        qWarning() << "\tInsert into failed with:" << this << query.lastError();
         QSqlQuery select;
         select.prepare("SELECT data, header FROM responses WHERE url = :url");
-        select.bindValue(":url", m_reply->url());
+        select.bindValue(":url", url().toString());
         if (!select.exec()) {
-            qWarning() << "Unknown issue for storing: " << m_reply->url();
+            qWarning() << "\tUnknown issue for storing: " << this << url() << select.lastError();
             return;
         }
 
         select.next();
         if (httpHeader != select.value(1))
-            qWarning() << "Headers are different, not storing them for: " << m_reply->url();
-        if (m_internalData != select.value(0))
-            qWarning() << "Data is different, not storing it for: " << m_reply->url();
+            qWarning() << "\tHeaders are different, not storing them for: " << url();
+        if (m_data != select.value(0))
+            qWarning() << "\tData is different, not storing it for: " << url();
+    } else {
+        QFile file(QString("dump.%1").arg(dumpId));
+        file.open(QFile::WriteOnly | QFile::Truncate);
+        file.write(m_data);
+        file.close();
     }
 }
 
@@ -126,14 +213,14 @@ public:
                                          QIODevice *outgoingData)
     {
         QNetworkReply* reply = QNetworkAccessManager::createRequest(op, request, outgoingData);
-        new NetworkReplyObserver(reply);
-        return reply;
+        return new NetworkReplyProxy(this, reply);
     }
 
 public Q_SLOTS:
     void allLoaded()
     {
-        exit(0);
+        qApp->processEvents();
+        qApp->exit();
     }
 };
 
