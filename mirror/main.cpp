@@ -274,6 +274,13 @@ int main(int argc, char **argv)
             keepRunning = true;
         } else if (arg == QLatin1String("-v")) {
             isVisible = true;
+        } else if (arg == QLatin1String("-h") || arg == QLatin1String("--help")) {
+            fprintf(stderr, "%s options [url]\n", argv[0]);
+            fprintf(stderr, "\t-c cookies.ini\tUse the cookies from this file.\n"
+                            "\t\t\tThe cookie file is compatible with Arora.\n");
+            fprintf(stderr, "\t-v\t\tShow the WebView when running\n");
+            fprintf(stderr, "\t-k\t\tKeep the application running.\n");
+            return -1;
         } else {
             url = arg;
         }
