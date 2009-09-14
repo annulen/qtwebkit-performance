@@ -262,6 +262,7 @@ int main(int argc, char **argv)
     QStringList args = app.arguments();
     QUrl url("http://www.google.com/news");
     bool keepRunning = false;
+    bool isVisible = false;
 
     for (int i = 0; i < args.size(); ++i) {
         const QString& arg = args[i];
@@ -271,6 +272,8 @@ int main(int argc, char **argv)
             qWarning("Loading jar from: %s %d", qPrintable(args.at(i + 1)), loaded);
         } else if (arg == QLatin1String("-k")) {
             keepRunning = true;
+        } else if (arg == QLatin1String("-v")) {
+            isVisible = true;
         } else {
             url = arg;
         }
@@ -292,6 +295,7 @@ int main(int argc, char **argv)
     }
 
     view->load(url);
+    view->setVisible(isVisible);
 
 
     return app.exec();
