@@ -143,7 +143,7 @@ main (int argc, char *argv[])
   if (remaining >= argc || remaining + 2 < argc)
     {
       argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
-		 program_invocation_short_name);
+		 "memusagestat");
       exit (1);
     }
 
