@@ -7,4 +7,4 @@ SUBDIRS = loading/tst_loading.pro painting/tst_painting.pro scrolling/tst_scroll
 SUBDIRS += robustness mirror launcher
 
 # host tools
-SUBDIRS += http_server
+SUBDIRS += http_server memusagestat
