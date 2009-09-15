@@ -70,6 +70,7 @@ private:
 void tst_Scrolling::init()
 {
     m_view = new QWebView;
+    m_view->show();
     m_page = m_view->page();
 
     QSize viewportSize(1024, 768);
