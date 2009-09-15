@@ -114,6 +114,12 @@ void tst_Scrolling::scroll()
             ++offset;
             qApp->processEvents();
         } while(offset + m_page->viewportSize().height() < mainFrame->contentsSize().height());
+
+        do {
+            mainFrame->scroll(0, -1);
+            --offset;
+            qApp->processEvents();
+        } while(offset >= 0);
     }
 }
 
