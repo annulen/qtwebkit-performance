@@ -19,6 +19,8 @@
 
 #include <QtTest/QtTest>
 
+#include "common_init.h"
+
 #include <qwebframe.h>
 #include <qwebview.h>
 #include <qpainter.h>
@@ -82,13 +84,7 @@ void tst_Loading::cleanup()
 
 void tst_Loading::load_data()
 {
-    QTest::addColumn<QUrl>("url");
-    QTest::newRow("amazon") << QUrl("http://www.amazon.com");
-    QTest::newRow("kde") << QUrl("http://www.kde.org");
-    QTest::newRow("apple") << QUrl("http://www.apple.com");
-    QTest::newRow("youtube") << QUrl("http://www.youtube.com"):
-    QTest::newRow("google-news") << QUrl("http://www.google.com/news");
-    QTest::newRow("naver") << QUrl("http://www.naver.com");
+    add_test_urls();
 }
 
 void tst_Loading::load()

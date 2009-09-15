@@ -19,6 +19,8 @@
 
 #include <QtTest/QtTest>
 
+#include "common_init.h"
+
 #include <qwebframe.h>
 #include <qwebview.h>
 #include <qpainter.h>
@@ -82,10 +84,7 @@ void tst_Painting::cleanup()
 
 void tst_Painting::paint_data()
 {
-    QTest::addColumn<QUrl>("url");
-    //QTest::newRow("amazon") << QUrl("http://www.amazon.com");
-    //QTest::newRow("india") << QUrl("http://en.wikipedia.org/wiki/India");
-    QTest::newRow("local") << QUrl("file:///usr/share/doc/gcc-3.4-base/NEWS.html");
+    add_test_urls();
 }
 
 void tst_Painting::paint()
