@@ -26,6 +26,10 @@ load all of them will be printed.
 
 Painting will load the page and then paint.
 
+=== Scrolling ===
+
+Scroll the content...
+
 === Robustness ===
 
 Open a webpage, pick a random link, load it, do that forever. This
