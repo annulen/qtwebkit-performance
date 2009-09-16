@@ -233,7 +233,7 @@ main (int argc, char *argv[])
   grey = gdImageColorAllocate (im_out, 224, 224, 224);
 
   /* Set transparent color. */
-  gdImageColorTransparent (im_out, grey);
+  gdImageRectangle(im_out, 0, 0, xsize, ysize, grey);
 
   /* These are all the other colors we need (in the moment).  */
   red = gdImageColorAllocate (im_out, 255, 0, 0);
