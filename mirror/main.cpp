@@ -231,7 +231,7 @@ public Q_SLOTS:
     void allLoaded()
     {
         qApp->processEvents();
-        qApp->exit();
+        exit(0);
     }
 };
 
