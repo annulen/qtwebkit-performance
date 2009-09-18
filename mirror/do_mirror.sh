@@ -8,7 +8,7 @@ WEBSITES="http://us.yahoo.com http://google.com/ncr http://maps.google.com http:
 WEBSITES="$WEBSITES http://amazon.com http://ebay.com"
 
 # news sites
-WEBSITES="$WEBSITES http://bbc.co.uk http://www.guardian.co.uk http://google.com/news/?hl=en http://news.yahoo.com"
+WEBSITES="$WEBSITES http://bbc.co.uk http://www.guardian.co.uk http://www.google.com/news?ned=us http://news.yahoo.com"
 
 # English entertainment
 WEBSITES="$WEBSITES http://flickr.com http://www.youtube.com/?hl=en_US http://myspace.com http://www.twitter.com http://twitter.com/BARACKOBAMA"
