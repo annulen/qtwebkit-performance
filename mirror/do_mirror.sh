@@ -2,7 +2,7 @@
 # Websites we want to mirror
 
 # English
-WEBSITES="http://us.yahoo.com http://google.com/ncr http://maps.google.com http://www.apple.com"
+WEBSITES="http://us.yahoo.com http://google.com/ http://maps.google.com http://www.apple.com"
 
 # shopping
 WEBSITES="$WEBSITES http://amazon.com http://ebay.com"
