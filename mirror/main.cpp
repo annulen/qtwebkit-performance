@@ -160,12 +160,9 @@ void NetworkReplyProxy::writeData()
     QByteArray httpHeader;
     QList<QByteArray> headers = rawHeaderList();
     foreach(QByteArray header, headers) {
-        if (header.toLower() == "content-length")
-            qWarning() << "HELP HELP HELP" << header << rawHeader(header) << url();
-
         if (header.toLower() == "content-encoding" || header.toLower() == "transfer-encoding" || header.toLower() == "content-length")
             continue;
-        qWarning("Header '%s' data '%s'", header.constData(), rawHeader(header).constData());
+
         // special case for cookies.... we need to generate separate lines
         if (header.toLower() == "set-cookie") {
         } else {
