@@ -58,6 +58,8 @@ static void createJob(ResourceHandleClient* client, const QUrl& url)
 {
     ++jobsToDo;
     ResourceRequest req(url);
+
+    // yes these will be leaked...
     ResourceHandle* handle = new ResourceHandle(client, req);
     QNetworkReplyHandler* handler = new QNetworkReplyHandler(handle, QNetworkReplyHandler::LoadNormal);
 }
