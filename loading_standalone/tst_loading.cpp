@@ -48,9 +48,9 @@ static int jobsToDo = 0;
 
 class Client : public ResourceHandleClient {
 public:
-    void didReceiveResponse(ResourceHandle* handle, const ResourceResponse&) { /*qWarning() << __PRETTY_FUNCTION__ << handle->request().url(); */ }
-    void didReceiveData(ResourceHandle* handle, const char*, int, int) { /*qWarning() << __PRETTY_FUNCTION__<< handle->request().url();*/ }
-    void didFinishLoading(ResourceHandle* handle) { /*qWarning() << __PRETTY_FUNCTION__ << handle->request().url(); */ --jobsToDo; }
+    void didReceiveResponse(ResourceHandle* handle, const ResourceResponse&) { }
+    void didReceiveData(ResourceHandle* handle, const char*, int, int) { }
+    void didFinishLoading(ResourceHandle* handle) { --jobsToDo; }
     void willSendRequest(ResourceHandle* handle, const ResourceRequest& req, const ResourceResponse& resp) { qWarning() << __PRETTY_FUNCTION__ << handle->request().url(); }
 };
 
@@ -66,7 +66,6 @@ void tst_Loading::loadAll()
 {
     Client client;
 
-    const QDateTime startTime = QDateTime::currentDateTime();
     createJob(&client, QUrl("http://en.wikipedia.org/wiki/Maxwell_equations"));
     createJob(&client, QUrl("http://en.wikipedia.org/skins-1.5/common/shared.css?239az2"));
     createJob(&client, QUrl("http://en.wikipedia.org/skins-1.5/common/shared.css"));
@@ -255,12 +254,9 @@ void tst_Loading::loadAll()
     createJob(&client, QUrl("http://upload.wikimedia.org/math/b/4/b/b4b2b367a342835efcbb9067e4c36354.png"));
     createJob(&client, QUrl("http://upload.wikimedia.org/math/4/2/d/42d5b4247496a805df8099010d51db92.png"));
     createJob(&client, QUrl("http://upload.wikimedia.org/wikipedia/en/1/18/Monobook-bullet.png"));
-    
+
     while (jobsToDo > 0)
         qApp->processEvents();
-
-    QDateTime endTime = QDateTime::currentDateTime();
-    qWarning() << "Downloads took" << endTime.toTime_t() - startTime.toTime_t();
 }
 
 QTEST_MAIN(tst_Loading)
