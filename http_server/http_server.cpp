@@ -212,6 +212,9 @@ void HttpRequestThread::run()
 
     if (!m_socket->setSocketDescriptor(m_fd)) {
         qWarning() << "Adopting the socket failed";
+        close(m_fd);
+        m_fd = -1;
+        delete m_socket;
         return;
     }
 
