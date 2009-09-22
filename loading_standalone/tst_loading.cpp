@@ -26,6 +26,8 @@
 #include "QNetworkReplyHandler.h"
 #include "WebCore_classes.h"
 
+#include <time.h>
+
 using namespace WebCore;
 
 class tst_Loading : public QObject
@@ -48,20 +50,31 @@ static int jobsToDo = 0;
 
 class Client : public ResourceHandleClient {
 public:
-    void didReceiveResponse(ResourceHandle* handle, const ResourceResponse&) { }
+    void didReceiveResponse(ResourceHandle* handle, const ResourceResponse&) {clock_gettime(CLOCK_MONOTONIC, &handle->m_responseTime); }
     void didReceiveData(ResourceHandle* handle, const char*, int, int) { }
-    void didFinishLoading(ResourceHandle* handle) { --jobsToDo; }
+    void didFinishLoading(ResourceHandle* handle) { --jobsToDo; clock_gettime(CLOCK_MONOTONIC, &handle->m_finishTime);}
     void willSendRequest(ResourceHandle* handle, const ResourceRequest& req, const ResourceResponse& resp) { qWarning() << __PRETTY_FUNCTION__ << handle->request().url(); }
 };
 
+static QList<ResourceHandle*> resourceHandles;
+static QList<QNetworkReplyHandler*> handlerList;
 static void createJob(ResourceHandleClient* client, const QUrl& url)
 {
     ++jobsToDo;
     ResourceRequest req(url);
 
-    // yes these will be leaked...
     ResourceHandle* handle = new ResourceHandle(client, req);
     QNetworkReplyHandler* handler = new QNetworkReplyHandler(handle, QNetworkReplyHandler::LoadNormal);
+
+    resourceHandles.append(handle);
+    handlerList.append(handler);
+}
+
+static double time_diff(struct timespec _start, struct timespec _end)
+{
+    qint64 start = _start.tv_sec * 1000000000 + _start.tv_nsec;
+    qint64 end = _end.tv_sec * 1000000000 + _end.tv_nsec;
+    return (end - start) / 1000000000.0;
 }
 
 void tst_Loading::loadAll()
@@ -262,6 +275,15 @@ void tst_Loading::loadAll()
     while (jobsToDo > 0)
         qApp->processEvents();
     }
+
+    foreach(ResourceHandle* handle, resourceHandles) {
+        qWarning("Perf time: url: %s latency: %g download: %g", qPrintable(handle->request().url().toString()), time_diff(handle->m_createTime, handle->m_responseTime), time_diff(handle->m_createTime, handle->m_finishTime));
+    }
+
+    qDeleteAll(handlerList);
+    qDeleteAll(resourceHandles);
+    handlerList.clear();
+    resourceHandles.clear();
 }
 
 QTEST_MAIN(tst_Loading)
