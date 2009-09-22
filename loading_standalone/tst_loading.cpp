@@ -40,8 +40,12 @@ private Q_SLOTS:
     void loadAll();
     void byteArrayTestLower();
     void byteArrayTestCompare();
+    void dateParsingVerify();
+    void dateParsingQt();
+    void dateParsingPosix();
 
 private:
+    static QList<QByteArray> dateStrings();
     QWebView* m_view;
     QWebPage* m_page;
 };
@@ -314,6 +318,349 @@ void tst_Loading::byteArrayTestCompare()
             ;
         else
             qFatal("Not as it should be");
+    }
+}
+
+QList<QByteArray> tst_Loading::dateStrings()
+{
+    QList<QByteArray> lists;
+    lists.append(QByteArray("Sat, 19 Sep 2009 12:10:05 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Sun, 20 Sep 2009 19:00:01 GMT"));
+    lists.append(QByteArray("Sun, 20 Sep 2009 19:00:01 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Fri, 17 Jul 2009 19:12:24 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:16 GMT"));
+    lists.append(QByteArray("Fri, 17 Jul 2009 19:35:33 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:26 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:28 GMT"));
+    lists.append(QByteArray("Wed, 12 Aug 2009 21:54:29 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:28 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:16 GMT"));
+    lists.append(QByteArray("Wed, 12 Aug 2009 21:54:29 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:16 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:42 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:16 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:26 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:27 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:27 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:28 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:28 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:29 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:28 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:29 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:01:28 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:43 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:43 GMT"));
+    lists.append(QByteArray("Tue, 14 Jul 2009 00:00:52 GMT"));
+    lists.append(QByteArray("Tue, 14 Jul 2009 00:00:52 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:43 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:43 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:43 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:19 GMT"));
+    lists.append(QByteArray("Tue, 14 Jul 2009 00:00:46 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Tue, 14 Jul 2009 00:00:46 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:18 GMT"));
+    lists.append(QByteArray("Tue, 14 Jul 2009 00:00:45 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:44 GMT"));
+    lists.append(QByteArray("Tue, 14 Jul 2009 00:00:46 GMT"));
+    lists.append(QByteArray("Thu, 10 Sep 2009 07:06:53 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:18 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:16 GMT"));
+    lists.append(QByteArray("Fri, 21 Oct 2005 23:46:21 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 21:14:16 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:45 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:45 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:46 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:46 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:46 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:45 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:45 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:47 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:47 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:46 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:47 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:47 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:46 GMT"));
+    lists.append(QByteArray("Fri, 20 Feb 2009 18:08:34 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:11:47 GMT"));
+    lists.append(QByteArray("Thu, 10 Sep 2009 05:34:58 GMT"));
+    lists.append(QByteArray("Wed, 16 Sep 2009 13:40:13 GMT"));
+    lists.append(QByteArray("Tue, 29 Nov 2005 22:03:51 GMT"));
+    lists.append(QByteArray("Fri, 31 Jul 2009 18:48:44 GMT"));
+    lists.append(QByteArray("Fri, 20 Feb 2009 18:06:15 GMT"));
+    lists.append(QByteArray("Sat, 29 Aug 2009 13:29:27 GMT"));
+    lists.append(QByteArray("Fri, 11 Jul 2008 11:50:04 GMT"));
+    lists.append(QByteArray("Tue, 22 Jan 2008 01:46:41 GMT"));
+    lists.append(QByteArray("Tue, 22 Jan 2008 01:46:41 GMT"));
+    lists.append(QByteArray("Fri, 20 Feb 2009 19:37:55 GMT"));
+    lists.append(QByteArray("Tue, 22 Jan 2008 01:46:41 GMT"));
+    lists.append(QByteArray("Tue, 22 Jan 2008 01:46:42 GMT"));
+    lists.append(QByteArray("Wed, 09 Sep 2009 14:05:14 GMT"));
+    lists.append(QByteArray("Thu, 22 Jan 2009 21:28:14 GMT"));
+    lists.append(QByteArray("Sun, 26 Jul 2009 17:31:43 GMT"));
+    lists.append(QByteArray("Tue, 15 Sep 2009 13:12:02 GMT"));
+    lists.append(QByteArray("Fri, 17 Jul 2009 20:02:06 GMT"));
+    lists.append(QByteArray("Tue, 22 Jan 2008 01:59:38 GMT"));
+    lists.append(QByteArray("Tue, 04 Aug 2009 06:21:43 GMT"));
+    lists.append(QByteArray("Tue, 22 Jan 2008 19:46:45 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:46:34 GMT"));
+    lists.append(QByteArray("Tue, 28 Apr 2009 17:07:36 GMT"));
+    lists.append(QByteArray("Tue, 04 Aug 2009 05:49:05 GMT"));
+    lists.append(QByteArray("Fri, 17 Jul 2009 20:02:06 GMT"));
+    lists.append(QByteArray("Tue, 04 Aug 2009 05:49:04 GMT"));
+    lists.append(QByteArray("Thu, 27 Mar 2008 16:30:37 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:46:34 GMT"));
+    lists.append(QByteArray("Tue, 21 Jul 2009 14:46:35 GMT"));
+    lists.append(QByteArray("Wed, 26 Mar 2008 22:27:35 GMT"));
+    lists.append(QByteArray("Wed, 26 Mar 2008 22:27:34 GMT"));
+    lists.append(QByteArray("Thu, 22 Jan 2009 21:27:06 GMT"));
+    lists.append(QByteArray("Wed, 09 Jul 2008 13:26:33 GMT"));
+    lists.append(QByteArray("Wed, 09 Jul 2008 13:26:33 GMT"));
+    lists.append(QByteArray("Thu, 04 Sep 2008 18:26:20 GMT"));
+    lists.append(QByteArray("Fri, 17 Jul 2009 20:02:42 GMT"));
+    lists.append(QByteArray("Sun, 12 Jul 2009 20:07:35 GMT"));
+    lists.append(QByteArray("Thu, 10 Sep 2009 07:06:55 GMT"));
+    lists.append(QByteArray("Wed, 15 Oct 2008 17:15:46 GMT"));
+    lists.append(QByteArray("Thu, 21 May 2009 14:41:01 GMT"));
+    lists.append(QByteArray("Thu, 21 May 2009 14:44:07 GMT"));
+    lists.append(QByteArray("Sat, 12 Jan 2008 14:48:47 GMT"));
+    lists.append(QByteArray("Sat, 12 Jan 2008 14:48:47 GMT"));
+    lists.append(QByteArray("Thu, 11 Dec 2008 03:09:50 GMT"));
+    lists.append(QByteArray("Sat, 12 Jan 2008 14:48:47 GMT"));
+    lists.append(QByteArray("Thu, 11 Jan 2007 00:50:55 GMT"));
+    lists.append(QByteArray("Thu, 25 Sep 2008 21:53:26 GMT"));
+    lists.append(QByteArray("Tue, 16 Jun 2009 13:01:58 GMT"));
+    lists.append(QByteArray("Wed, 29 Jul 2009 05:40:30 GMT"));
+    lists.append(QByteArray("Thu, 06 Mar 2008 19:55:41 GMT"));
+    lists.append(QByteArray("Wed, 29 Jul 2009 05:40:30 GMT"));
+    lists.append(QByteArray("Thu, 04 Sep 2008 18:26:21 GMT"));
+    lists.append(QByteArray("Tue, 04 Aug 2009 05:49:04 GMT"));
+    lists.append(QByteArray("Thu, 18 Dec 2008 16:09:56 GMT"));
+    lists.append(QByteArray("Thu, 18 Dec 2008 16:09:55 GMT"));
+    lists.append(QByteArray("Sun, 15 Mar 2009 10:55:03 GMT"));
+    lists.append(QByteArray("Tue, 04 Aug 2009 04:30:54 GMT"));
+    lists.append(QByteArray("Thu, 18 Dec 2008 16:09:54 GMT"));
+    lists.append(QByteArray("Thu, 10 Sep 2009 07:50:21 GMT"));
+    lists.append(QByteArray("Thu, 18 Dec 2008 16:09:56 GMT"));
+    lists.append(QByteArray("Sun, 15 Mar 2009 10:55:03 GMT"));
+    lists.append(QByteArray("Fri, 25 Jul 2008 16:26:40 GMT"));
+    lists.append(QByteArray("Sat, 06 Jan 2007 13:19:45 GMT"));
+    lists.append(QByteArray("Thu, 18 Dec 2008 16:09:57 GMT"));
+    lists.append(QByteArray("Sun, 15 Mar 2009 10:55:53 GMT"));
+    lists.append(QByteArray("Mon, 03 Aug 2009 07:19:10 GMT"));
+    lists.append(QByteArray("Wed, 01 Oct 2008 02:04:14 GMT"));
+    lists.append(QByteArray("Fri, 26 Sep 2008 17:50:00 GMT"));
+    lists.append(QByteArray("Wed, 01 Oct 2008 02:04:14 GMT"));
+    lists.append(QByteArray("Fri, 17 Jul 2009 17:29:45 GMT"));
+    lists.append(QByteArray("Fri, 26 Sep 2008 17:58:45 GMT"));
+    lists.append(QByteArray("Fri, 26 Sep 2008 18:02:21 GMT"));
+    lists.append(QByteArray("Fri, 11 Jul 2008 22:07:21 GMT"));
+    lists.append(QByteArray("Wed, 01 Oct 2008 03:14:45 GMT"));
+    lists.append(QByteArray("Fri, 26 Sep 2008 17:58:45 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:42:07 GMT"));
+    lists.append(QByteArray("Sun, 29 Jul 2007 18:35:55 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:42:06 GMT"));
+    lists.append(QByteArray("Fri, 11 Jul 2008 22:07:21 GMT"));
+    lists.append(QByteArray("Thu, 09 Nov 2006 19:56:57 GMT"));
+    lists.append(QByteArray("Thu, 17 Sep 2009 15:47:36 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:42:07 GMT"));
+    lists.append(QByteArray("Fri, 11 Sep 2009 09:08:59 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:35:31 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:29:33 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:11 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:43:40 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:09 GMT"));
+    lists.append(QByteArray("Fri, 28 Aug 2009 00:28:17 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:09 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:10 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:09 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:10 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:10 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:10 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:10 GMT"));
+    lists.append(QByteArray("Wed, 29 Oct 2008 22:15:42 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:11 GMT"));
+    lists.append(QByteArray("Thu, 04 Sep 2008 18:26:23 GMT"));
+    lists.append(QByteArray("Thu, 18 Dec 2008 16:10:41 GMT"));
+    lists.append(QByteArray("Thu, 04 Sep 2008 18:26:22 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:12 GMT"));
+    lists.append(QByteArray("Wed, 15 Oct 2008 17:15:17 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:12 GMT"));
+    lists.append(QByteArray("Mon, 17 Aug 2009 16:23:12 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:12 GMT"));
+    lists.append(QByteArray("Wed, 06 Aug 2008 12:36:12 GMT"));
+    lists.append(QByteArray("Thu, 30 Jul 2009 10:27:15 GMT"));
+    lists.append(QByteArray("Thu, 30 Jul 2009 10:27:15 GMT"));
+    lists.append(QByteArray("Thu, 30 Jul 2009 11:03:37 GMT"));
+    lists.append(QByteArray("Tue, 21 Nov 2006 21:27:26 GMT"));
+    return lists;
+}
+
+static QDateTime fromHttpDateQt(const QByteArray &value)
+{
+    // HTTP dates have three possible formats:
+    //  RFC 1123/822      -   ddd, dd MMM yyyy hh:mm:ss "GMT"
+    //  RFC 850           -   dddd, dd-MMM-yy hh:mm:ss "GMT"
+    //  ANSI C's asctime  -   ddd MMM d hh:mm:ss yyyy
+    // We only handle them exactly. If they deviate, we bail out.
+
+    int pos = value.indexOf(',');
+    QDateTime dt;
+    if (pos == -1) {
+        // no comma -> asctime(3) format
+        dt = QDateTime::fromString(QString::fromLatin1(value), Qt::TextDate);
+    } else {
+        // eat the weekday, the comma and the space following it
+        QString sansWeekday = QString::fromLatin1(value.constData() + pos + 2);
+
+        QLocale c = QLocale::c();
+        if (pos == 3)
+            // must be RFC 1123 date
+            dt = c.toDateTime(sansWeekday, QLatin1String("dd MMM yyyy hh:mm:ss 'GMT"));
+        else
+            // must be RFC 850 date
+            dt = c.toDateTime(sansWeekday, QLatin1String("dd-MMM-yy hh:mm:ss 'GMT'"));
+    }
+
+    if (dt.isValid())
+        dt.setTimeSpec(Qt::UTC);
+    return dt;
+}
+
+static int name_to_month(const char* month_str)
+{
+    switch (month_str[0]) {
+    case 'J':
+        switch (month_str[1]) {
+        case 'a':
+            return 1;
+            break;
+        case 'u':
+            switch (month_str[2] ) {
+            case 'n':
+                return 6;
+                break;
+            case 'l':
+                return 7;
+                break;
+            }
+        }
+        break;
+    case 'F':
+        return 2;
+        break;
+    case 'M':
+        switch ( month_str[2] ) {
+        case 'r':
+            return 3;
+            break;
+        case 'y':
+            return 5;
+            break;
+        }
+        break;
+    case 'A':
+        switch (month_str[1]){
+        case 'p':
+            return 4;
+            break;
+        case 'u':
+            return 8;
+            break;
+        }
+        break;
+    case 'O':
+        return 10;
+        break;
+    case 'S':
+        return 9;
+        break;
+    case 'N':
+        return 11;
+        break;
+    case 'D':
+        return 12;
+        break;
+    }
+
+    return 0;
+}
+
+static QDateTime fromHttpDatePosix(const QByteArray &value)
+{
+    // HTTP dates have three possible formats:
+    //  RFC 1123/822      -   ddd, dd MMM yyyy hh:mm:ss "GMT"
+    //  RFC 850           -   dddd, dd-MMM-yy hh:mm:ss "GMT"
+    //  ANSI C's asctime  -   ddd MMM d hh:mm:ss yyyy
+    // We only handle them exactly. If they deviate, we bail out.
+
+    int pos = value.indexOf(',');
+    QDateTime dt;
+    if (pos == -1) {
+        // no comma -> asctime(3) format
+        dt = QDateTime::fromString(QString::fromLatin1(value), Qt::TextDate);
+    } else {
+
+        if (pos == 3) {
+            // must be RFC 1123 date
+            char month_name[4];
+            int day, year, hour, minute, second;
+            if (sscanf(value.constData(), "%*3s, %d %3s %d %d:%d:%d 'GMT'", &day, month_name, &year, &hour, &minute, &second) == 6) {
+                dt = QDateTime(QDate(year, name_to_month(month_name), day), QTime(hour, minute, second));
+            }
+        } else {
+            // eat the weekday, the comma and the space following it
+            QString sansWeekday = QString::fromLatin1(value.constData() + pos + 2);
+            // must be RFC 850 date
+            dt = QLocale::c().toDateTime(sansWeekday, QLatin1String("dd-MMM-yy hh:mm:ss 'GMT'"));
+        }
+    }
+
+    if (dt.isValid())
+        dt.setTimeSpec(Qt::UTC);
+    return dt;
+}
+
+void tst_Loading::dateParsingVerify()
+{
+    QList<QByteArray> dates = dateStrings();
+
+    foreach(const QByteArray& dateString, dates) {
+        QCOMPARE(fromHttpDateQt(dateString), fromHttpDatePosix(dateString));
+    }
+}
+
+void tst_Loading::dateParsingQt()
+{
+    QList<QByteArray> dates = dateStrings();
+
+    QBENCHMARK {
+        foreach(const QByteArray& dateString, dates) {
+            fromHttpDateQt(dateString);
+        }
+    }
+}
+
+void tst_Loading::dateParsingPosix()
+{
+    QList<QByteArray> dates = dateStrings();
+
+    QBENCHMARK {
+        foreach(const QByteArray& dateString, dates) {
+            fromHttpDatePosix(dateString);
+        }
     }
 }
 
