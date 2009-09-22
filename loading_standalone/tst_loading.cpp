@@ -38,6 +38,8 @@ public:
 
 private Q_SLOTS:
     void loadAll();
+    void byteArrayTestLower();
+    void byteArrayTestCompare();
 
 private:
     QWebView* m_view;
@@ -284,6 +286,35 @@ void tst_Loading::loadAll()
     qDeleteAll(resourceHandles);
     handlerList.clear();
     resourceHandles.clear();
+}
+
+void tst_Loading::byteArrayTestLower()
+{
+    QByteArray key("Cache-Control");
+    QByteArray lookup("cache-control");
+
+    QBENCHMARK {
+        QByteArray keyLower = key.toLower();
+        QByteArray lookupLower = lookup.toLower();
+
+        if (keyLower == "cache-control")
+            ;
+        else
+            qFatal("Not as it should be");
+    }
+}
+
+void tst_Loading::byteArrayTestCompare()
+{
+    QByteArray key("Cache-Control");
+    QByteArray lookup("cache-control");
+
+    QBENCHMARK {
+        if (qstricmp(key.constData(), "cache-control") == 0)
+            ;
+        else
+            qFatal("Not as it should be");
+    }
 }
 
 QTEST_MAIN(tst_Loading)
