@@ -103,6 +103,11 @@ void tst_Painting::paint()
         QPainter painter(&pixmap);
         mainFrame->render(&painter, QRect(QPoint(0, 0), m_page->viewportSize()));
         painter.end();
+
+        // force badness... to have some reliable result on non raster..
+        // this will make the result "unreal" in some ways but might be
+        // better than just using the raster engine.
+        QApplication::syncX();
     }
 }
 
