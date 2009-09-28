@@ -278,8 +278,8 @@ void tst_Loading::loadAll()
         createJob(&client, QUrl("http://upload.wikimedia.org/math/4/2/d/42d5b4247496a805df8099010d51db92.png"));
         createJob(&client, QUrl("http://upload.wikimedia.org/wikipedia/en/1/18/Monobook-bullet.png"));
 
-    while (jobsToDo > 0)
-        qApp->processEvents();
+        while (jobsToDo > 0)
+            qApp->processEvents();
     }
 
     foreach(ResourceHandle* handle, resourceHandles) {
