@@ -35,6 +35,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+#include <unistd.h>
+
 class HttpRequestThread;
 class HttpRequest {
     friend class HttpRequestThread;
