@@ -247,10 +247,6 @@ int main(int argc, char** argv)
     if (!server->listen(QHostAddress::Any, 80))
         qFatal("Failed to listen");
 
-    QByteArray response, headers, data;
-    qWarning() << "Foo " << HttpRequestThread::search("http://www.google.com/", response, headers, data);
-    qWarning() << headers;
-
     return app.exec();
 }
 
