@@ -22,7 +22,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QStringList>
 #include <QThread>
 #include <QUrl>
@@ -231,7 +231,7 @@ void HttpRequestThread::run()
 
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
 
     QString fileName = "crawl_db.db";
     if (app.arguments().size() >= 2)
