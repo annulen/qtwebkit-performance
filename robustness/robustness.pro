@@ -1,3 +1,4 @@
 TEMPLATE = app
 SOURCES += main.cpp
-QT += webkit
+
+include(../common.pri)
