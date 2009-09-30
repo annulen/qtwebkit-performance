@@ -211,6 +211,7 @@ void QNetworkReplyHandler::sendResponseIfNeeded()
      * For local file requests remove the content length and the last-modified
      * headers as required by fast/dom/xmlhttprequest-get.xhtml
      */
+#if 0
     foreach (const QNetworkReply::RawHeaderPair& headerPair, m_reply->rawHeaderPairs()) {
         const QByteArray& headerName = headerPair.first;
         const QByteArray& headerValue = headerPair.second;
@@ -221,6 +222,17 @@ void QNetworkReplyHandler::sendResponseIfNeeded()
 
         response.setHTTPHeaderField(QString::fromAscii(headerName), QString::fromAscii(headerValue));
     }
+#else
+   foreach (QByteArray headerName, m_reply->rawHeaderList()) {
+
+       if (isLocalFileReply
+           && (headerName == "Content-Length" || headerName == "Last-Modified"))
+           continue;
+
+       response.setHTTPHeaderField(QString::fromAscii(headerName), QString::fromAscii(m_reply->rawHeader(headerName)));
+   }
+
+#endif
 
     if (isLocalFileReply)
         response.setHTTPHeaderField(QString::fromAscii("Cache-Control"), QString::fromAscii("no-cache"));
