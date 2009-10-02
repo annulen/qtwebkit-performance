@@ -77,6 +77,7 @@ void add_test_urls()
     QTest::newRow("row37") << QUrl("http://www.google.co.kr/");
     QTest::newRow("row38") << QUrl("http://www.auction.co.kr");
     QTest::newRow("row39") << QUrl("http://www.youtube.com/?hl=ko-KR");
+    QTest::newRow("row40") << QUrl("http://www.linuxtogo.org/~zecke/image-stress-test.html");
 }
 
 #endif

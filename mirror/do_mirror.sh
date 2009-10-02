@@ -27,6 +27,9 @@ WEBSITES="$WEBSITES http://www.imdb.com http://www.linkedin.com"
 # some hand picked favorites
 WEBSITES="$WEBSITES http://en.wikipedia.org/wiki/Maxwell_equations"
 
+# some hand picked sites... sorry for the nudity... it is not my fault...
+WEBSITES="$WEBSITES http://www.linuxtogo.org/~zecke/image-stress-test.html"
+
 # Korean pages
 WEBSITES="$WEBSITES http://naver.com http://kr.yahoo.com http://www.google.co.kr/ http://www.auction.co.kr http://www.youtube.com/?hl=ko-KR"
 
