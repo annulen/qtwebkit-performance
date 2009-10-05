@@ -150,7 +150,7 @@ HttpRequest HttpRequestThread::parseHeader()
 
     // blocking reads...
     while (true) {
-        while(m_socket->canReadLine()) {
+        while (m_socket->state() == QTcpSocket::ConnectedState && m_socket->canReadLine()) {
             QByteArray line = m_socket->readLine();
 
             if (firstLine) {
