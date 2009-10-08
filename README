@@ -7,45 +7,4 @@ pages. Real webcontent will be used to do these tests.
 
 == How ==
 
-We have some copies of real world websites. These can be served with
-
-a fake server. This is requiring the following changes to
-    /etc/hosts:
-
-You can use the create_hosts.sh IP script to create entries
-based on your mirrored content.
-
-== Tests ==
-
-=== Loading ===
-
-Load webpages and wait for the completion. The time it takes to
-load all of them will be printed.
-
-=== Painting ===
-
-Painting will load the page and then paint.
-
-=== Scrolling ===
-
-Scroll the content...
-
-=== Robustness ===
-
-Open a webpage, pick a random link, load it, do that forever. This
-will provoke failures in QtWebKit we can attempt to analyze.
-
-== Tools ==
-
-=== Mirror ===
-
-Mirror a given webpage into a sqlite database. This can be used to
-implement a page loading test on top of these static data.
-
-=== http server ===
-
-Serve a sqlite3 database with content
-
-=== launcher ===
-
-Simple fullscreen application.
+See the wiki at: http://trac.webkit.org/wiki/QtWebKitPerformanceWork
