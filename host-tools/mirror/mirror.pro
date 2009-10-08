@@ -1,4 +1,5 @@
 TEMPLATE = app
+
 SOURCES += main.cpp
 
-include(../common.pri)
+include(../../common.pri)

@@ -1,12 +1,14 @@
 TEMPLATE = subdirs
 
-# benchmarks
-SUBDIRS = loading/tst_loading.pro painting/tst_painting.pro \
-          scrolling/tst_scrolling.pro loading_standalone/tst_loading_standalone.pro \
-          cycler/tst_cycler.pro
+# tests
+SUBDIRS = tests/loading/tst_loading.pro \
+          tests/painting/tst_painting.pro \
+          tests/scrolling/tst_scrolling.pro \
+          tests/cycler/tst_cycler.pro \
+          tests/launcher
 
-# no auto tests
-SUBDIRS += robustness mirror launcher
+# reductions
+SUBDIRS += reductions/loading_standalone/tst_loading_standalone.pro
 
 # host tools
-SUBDIRS += http_server
+SUBDIRS += host-tools/http_server host-tools/mirror
