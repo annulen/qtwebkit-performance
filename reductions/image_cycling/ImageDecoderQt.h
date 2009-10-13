@@ -65,7 +65,7 @@ private:
     void failRead();
 
 private:
-    QString m_format;
+    QByteArray m_format;
     QBuffer* m_buffer;
     QImageReader* m_reader;
     mutable int m_repetitionCount;

@@ -36,14 +36,13 @@
 
 namespace WebCore {
 
-#if 0
-ImageDecoder* ImageDecoder::create(const SharedBuffer& data)
+ImageDecoderQt* ImageDecoder::create(const QByteArray* data)
 {
     // We need at least 4 bytes to figure out what kind of image we're dealing with.
-    if (data.size() < 4)
+    if (data->size() < 4)
         return 0;
 
-    QByteArray bytes = QByteArray::fromRawData(data.data(), data.size());
+    QByteArray bytes = QByteArray::fromRawData(data->data(), data->size());
     QBuffer buffer(&bytes);
     if (!buffer.open(QBuffer::ReadOnly))
         return 0;
@@ -54,10 +53,10 @@ ImageDecoder* ImageDecoder::create(const SharedBuffer& data)
 
     return new ImageDecoderQt(imageFormat);
 }
-#endif
 
 ImageDecoderQt::ImageDecoderQt(const QByteArray& imageFormat)
-    : m_buffer(0)
+    : m_format(imageFormat)
+    , m_buffer(0)
     , m_reader(0)
     , m_repetitionCount(-1)
 {
@@ -86,7 +85,7 @@ void ImageDecoderQt::setData(QByteArray* data, bool allDataReceived)
     m_buffer = new QBuffer;
     m_buffer->setData(imageData);
     m_buffer->open(QBuffer::ReadOnly);
-    m_reader = new QImageReader(m_buffer);
+    m_reader = new QImageReader(m_buffer, m_format);
 }
 
 bool ImageDecoderQt::isSizeAvailable()
@@ -128,7 +127,7 @@ int ImageDecoderQt::repetitionCount() const
 
 QString ImageDecoderQt::filenameExtension() const
 {
-    return m_format;
+    return QString();
 };
 
 RGBA32Buffer* ImageDecoderQt::frameBufferAtIndex(size_t index)

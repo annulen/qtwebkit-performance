@@ -41,6 +41,7 @@
 #define cAnimationNone -2
 
 namespace WebCore {
+    class ImageDecoderQt;
 
     // The RGBA32Buffer object represents the decoded image data in RGBA32 format.  This buffer is what all
     // decoders write a single frame into.  Frames are then instantiated for drawing by being handed this buffer.
@@ -185,7 +186,7 @@ namespace WebCore {
         // Factory function to create an ImageDecoder.  Ports that subclass
         // ImageDecoder can provide their own implementation of this to avoid
         // needing to write a dedicated setData() implementation.
-        //static ImageDecoder* create(const SharedBuffer& data);
+        static ImageDecoderQt* create(const QByteArray* data);
 
         // The the filename extension usually associated with an undecoded image of this type.
         virtual QString filenameExtension() const = 0;
