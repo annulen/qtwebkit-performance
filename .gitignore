@@ -7,3 +7,7 @@ tst_painting
 *.sw?
 mirror/mirror
 robustness/robustness
+*.png
+tst_*
+callgrind.out.*
+qrc_*.cpp
