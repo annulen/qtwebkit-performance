@@ -42,16 +42,7 @@ ImageDecoderQt* ImageDecoder::create(const QByteArray* data)
     if (data->size() < 4)
         return 0;
 
-    QByteArray bytes = QByteArray::fromRawData(data->data(), data->size());
-    QBuffer buffer(&bytes);
-    if (!buffer.open(QBuffer::ReadOnly))
-        return 0;
-
-    QByteArray imageFormat = QImageReader::imageFormat(&buffer);
-    if (imageFormat.isEmpty())
-        return 0; // Image format not supported
-
-    return new ImageDecoderQt(imageFormat);
+    return new ImageDecoderQt(QByteArray());
 }
 
 ImageDecoderQt::ImageDecoderQt(const QByteArray& imageFormat)
@@ -86,6 +77,7 @@ void ImageDecoderQt::setData(QByteArray* data, bool allDataReceived)
     m_buffer->setData(imageData);
     m_buffer->open(QBuffer::ReadOnly);
     m_reader = new QImageReader(m_buffer, m_format);
+    //m_reader->setPreferredImageFormat(QImage::Format_RGB16);
 }
 
 bool ImageDecoderQt::isSizeAvailable()
