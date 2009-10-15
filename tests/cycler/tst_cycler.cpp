@@ -59,7 +59,6 @@ public Q_SLOTS:
     void cleanup();
 
 private Q_SLOTS:
-    void load_data();
     void load();
 
 private:
@@ -85,21 +84,19 @@ void tst_Loading::cleanup()
     delete m_view;
 }
 
-void tst_Loading::load_data()
-{
-    add_test_urls();
-}
-
 void tst_Loading::load()
 {
-    QFETCH(QUrl, url);
-
+    const QList<QUrl> urls = test_urls();
 
     QBENCHMARK {
-        m_view->load(url);
+        foreach(const QUrl& url, urls) {
+            m_view->load(url);
+            // really wait for loading..
+            ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
+        }
 
-        // really wait for loading..
-        ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
+        m_view->load(QUrl("about:blank"));
+        QWebSettings::clearMemoryCaches();
     }
 }
 

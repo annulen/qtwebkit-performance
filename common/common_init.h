@@ -34,50 +34,61 @@
  * Created from do_mirror.sh with the following shell foo:
  *  for site in $WEBSITES; do echo 'QTest::newRow("rowXY") <<' QUrl(\"$site\"\);; done
  */
+QList<QUrl> test_urls()
+{
+    QList<QUrl> urls;
+    urls << QUrl("http://us.yahoo.com");
+    urls << QUrl("http://google.com/ncr");
+    urls << QUrl("http://maps.google.com");
+    urls << QUrl("http://www.apple.com");
+    urls << QUrl("http://amazon.com");
+    urls << QUrl("http://ebay.com");
+    urls << QUrl("http://bbc.co.uk");
+    urls << QUrl("http://www.guardian.co.uk");
+    urls << QUrl("http://google.com/news/?hl=en");
+    urls << QUrl("http://news.yahoo.com");
+    urls << QUrl("http://flickr.com");
+    urls << QUrl("http://www.youtube.com/?hl=en_US");
+    urls << QUrl("http://myspace.com");
+    urls << QUrl("http://www.twitter.com");
+    urls << QUrl("http://twitter.com/BARACKOBAMA");
+    urls << QUrl("http://reddit.com");
+    urls << QUrl("http://www.facebook.com");
+    urls << QUrl("http://www.gmail.com");
+    urls << QUrl("http://mail.yahoo.com");
+    urls << QUrl("http://www.flickr.com");
+    urls << QUrl("http://hi5.com");
+    urls << QUrl("http://www.dailymotion.com");
+    urls << QUrl("http://youporn.com");
+    urls << QUrl("http://www.microsoft.com");
+    urls << QUrl("http://www.live.com");
+    urls << QUrl("http://www.wikipedia.org");
+    urls << QUrl("http://en.wikipedia.org");
+    urls << QUrl("http://www.wordpress.com");
+    urls << QUrl("http://www.rapidshare.com");
+    urls << QUrl("http://www.blogger.com");
+    urls << QUrl("http://www.bing.com");
+    urls << QUrl("http://www.imdb.com");
+    urls << QUrl("http://www.linkedin.com");
+    urls << QUrl("http://en.wikipedia.org/wiki/Maxwell_equations");
+    urls << QUrl("http://naver.com");
+    urls << QUrl("http://kr.yahoo.com");
+    urls << QUrl("http://www.google.co.kr/");
+    urls << QUrl("http://www.auction.co.kr");
+    urls << QUrl("http://www.youtube.com/?hl=ko-KR");
+    urls << QUrl("http://www.linuxtogo.org/~zecke/image-stress-test.html");
+
+    return urls;
+}
+
 void add_test_urls()
 {
+    QList<QUrl> row = test_urls();
     QTest::addColumn<QUrl>("url");
 
-    QTest::newRow("row01") << QUrl("http://us.yahoo.com");
-    QTest::newRow("row02") << QUrl("http://google.com/ncr");
-    QTest::newRow("row03") << QUrl("http://maps.google.com");
-    QTest::newRow("row04") << QUrl("http://www.apple.com");
-    QTest::newRow("row05") << QUrl("http://amazon.com");
-    QTest::newRow("row06") << QUrl("http://ebay.com");
-    QTest::newRow("row07") << QUrl("http://bbc.co.uk");
-    QTest::newRow("row08") << QUrl("http://www.guardian.co.uk");
-    QTest::newRow("row09") << QUrl("http://google.com/news/?hl=en");
-    QTest::newRow("row10") << QUrl("http://news.yahoo.com");
-    QTest::newRow("row11") << QUrl("http://flickr.com");
-    QTest::newRow("row12") << QUrl("http://www.youtube.com/?hl=en_US");
-    QTest::newRow("row13") << QUrl("http://myspace.com");
-    QTest::newRow("row14") << QUrl("http://www.twitter.com");
-    QTest::newRow("row15") << QUrl("http://twitter.com/BARACKOBAMA");
-    QTest::newRow("row16") << QUrl("http://reddit.com");
-    QTest::newRow("row17") << QUrl("http://www.facebook.com");
-    QTest::newRow("row18") << QUrl("http://www.gmail.com");
-    QTest::newRow("row19") << QUrl("http://mail.yahoo.com");
-    QTest::newRow("row20") << QUrl("http://www.flickr.com");
-    QTest::newRow("row21") << QUrl("http://hi5.com");
-    QTest::newRow("row22") << QUrl("http://www.dailymotion.com");
-    QTest::newRow("row23") << QUrl("http://youporn.com");
-    QTest::newRow("row24") << QUrl("http://www.microsoft.com");
-    QTest::newRow("row25") << QUrl("http://www.live.com");
-    QTest::newRow("row26") << QUrl("http://www.wikipedia.org");
-    QTest::newRow("row27") << QUrl("http://en.wikipedia.org");
-    QTest::newRow("row28") << QUrl("http://www.wordpress.com");
-    QTest::newRow("row29") << QUrl("http://www.rapidshare.com");
-    QTest::newRow("row30") << QUrl("http://www.blogger.com");
-    QTest::newRow("row31") << QUrl("http://www.bing.com");
-    QTest::newRow("row32") << QUrl("http://www.imdb.com");
-    QTest::newRow("row33") << QUrl("http://www.linkedin.com");
-    QTest::newRow("row34") << QUrl("http://en.wikipedia.org/wiki/Maxwell_equations");
-    QTest::newRow("row35") << QUrl("http://naver.com");
-    QTest::newRow("row36") << QUrl("http://kr.yahoo.com");
-    QTest::newRow("row37") << QUrl("http://www.google.co.kr/");
-    QTest::newRow("row38") << QUrl("http://www.auction.co.kr");
-    QTest::newRow("row39") << QUrl("http://www.youtube.com/?hl=ko-KR");
-    QTest::newRow("row40") << QUrl("http://www.linuxtogo.org/~zecke/image-stress-test.html");
+    for (int i = 0; i < row.count(); ++i)
+        QTest::newRow(QString("row%1").arg(i+1).toLatin1()) << row[i];
+
 }
 
 #endif
