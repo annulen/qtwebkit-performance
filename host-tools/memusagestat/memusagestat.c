@@ -169,15 +169,20 @@ main (int argc, char *argv[])
       error (EXIT_FAILURE, errno, "cannot get size of input file");
     }
   /* Test whether the file contains only full records.  */
-  if ((st.st_size % sizeof (struct entry)) != 0
-      /* The file must at least contain the two administrative records.  */
-      || st.st_size < 2 * sizeof (struct entry))
+  if (st.st_size < 2 * sizeof (struct entry))
     {
       close (fd);
-      error (EXIT_FAILURE, 0, "input file has incorrect size");
+      error (EXIT_FAILURE, 0, "input file lacks two records.\n");
     }
+
   /* Compute number of data entries.  */
   total = st.st_size / sizeof (struct entry) - 2;
+
+  if ((st.st_size % sizeof (struct entry)) != 0)
+    {
+      printf("File is truncated continuing anyway.\n");
+      total -= 1;
+    }
 
   /* Read the administrative information.  */
   read (fd, headent, sizeof (headent));
