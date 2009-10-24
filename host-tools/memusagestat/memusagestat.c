@@ -115,9 +115,9 @@ main (int argc, char *argv[])
   int grey, blue, red, green, yellow, black;
   int fd;
   struct stat st;
-  size_t maxsize_heap;
-  size_t maxsize_stack;
-  size_t maxsize_total;
+  uint64_t maxsize_heap;
+  uint64_t maxsize_stack;
+  uint64_t maxsize_total;
   uint64_t total;
   uint64_t cnt, cnt2;
   FILE *outfile;
@@ -174,13 +174,15 @@ main (int argc, char *argv[])
       || st.st_size < 2 * sizeof (struct entry))
     {
       close (fd);
-      error (EXIT_FAILURE, 0, "input file as incorrect size");
+      error (EXIT_FAILURE, 0, "input file has incorrect size");
     }
   /* Compute number of data entries.  */
   total = st.st_size / sizeof (struct entry) - 2;
 
   /* Read the administrative information.  */
   read (fd, headent, sizeof (headent));
+
+start_now:
   maxsize_heap = headent[1].heap;
   maxsize_stack = headent[1].stack;
   maxsize_total = headent[0].stack;
@@ -215,8 +217,10 @@ main (int argc, char *argv[])
       /* Write the computed values in the file.  */
       lseek (fd, sizeof (struct entry), SEEK_SET);
       write (fd, &headent[1], sizeof (struct entry));
+      goto start_now;
     }
 
+  printf("MAX: total: %llu stack: %llu heap: %llu\n", maxsize_total, maxsize_stack, maxsize_heap);
   start_time = ((uint64_t) headent[0].time_high) << 32 | headent[0].time_low;
   end_time = ((uint64_t) headent[1].time_high) << 32 | headent[1].time_low;
   total_time = end_time - start_time;
