@@ -1,5 +1,6 @@
 /* Generate graphic from memory profiling data.
-   Copyright (C) 1998, 1999, 2000, 2005, 2006 Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2005, 2006,
+   2009 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1998.
 
@@ -186,18 +187,9 @@ main (int argc, char *argv[])
 
   /* Read the administrative information.  */
   read (fd, headent, sizeof (headent));
-
-start_now:
   maxsize_heap = headent[1].heap;
   maxsize_stack = headent[1].stack;
   maxsize_total = headent[0].stack;
-  if (also_total)
-    {
-      /* We use one scale and since we also draw the total amount of
-	 memory used we have to adapt the maximum.  */
-      maxsize_heap = maxsize_total;
-      maxsize_stack = maxsize_total;
-    }
 
   if (maxsize_heap == 0 && maxsize_stack == 0)
     {
@@ -210,19 +202,31 @@ start_now:
 	{
 	  if (read (fd, &next, sizeof (next)) == 0)
 	    break;
-	  if (next.heap > headent[1].heap)
-	    headent[1].heap = next.heap;
-	  if (next.stack > headent[1].stack)
-	    headent[1].stack = next.stack;
+	  if (next.heap > maxsize_heap)
+	    maxsize_heap = next.heap;
+	  if (next.stack > maxsize_stack)
+	    maxsize_stack = next.stack;
+	  if (maxsize_heap + maxsize_stack > maxsize_total)
+	    maxsize_total = maxsize_heap + maxsize_stack;
 	}
 
+      headent[0].stack = maxsize_total;
+      headent[1].heap = maxsize_heap;
+      headent[1].stack = maxsize_stack;
       headent[1].time_low = next.time_low;
       headent[1].time_high = next.time_high;
 
       /* Write the computed values in the file.  */
-      lseek (fd, sizeof (struct entry), SEEK_SET);
-      write (fd, &headent[1], sizeof (struct entry));
-      goto start_now;
+      lseek (fd, 0, SEEK_SET);
+      write (fd, headent, 2 * sizeof (struct entry));
+    }
+
+  if (also_total)
+    {
+      /* We use one scale and since we also draw the total amount of
+	 memory used we have to adapt the maximum.  */
+      maxsize_heap = maxsize_total;
+      maxsize_stack = maxsize_total;
     }
 
   printf("MAX: total: %llu stack: %llu heap: %llu\n", maxsize_total, maxsize_stack, maxsize_heap);
