@@ -68,6 +68,8 @@ private:
 
 void tst_Loading::init()
 {
+    QWebSettings::globalSettings()->setMaximumPagesInCache(0);
+    QWebSettings::globalSettings()->setObjectCacheCapacities(0, 0, 0);
     m_view = new QWebView;
     m_page = m_view->page();
 

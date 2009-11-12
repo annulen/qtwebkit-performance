@@ -27,6 +27,8 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
+    QWebSettings::globalSettings()->setMaximumPagesInCache(0);
+    QWebSettings::globalSettings()->setObjectCacheCapacities(0, 0, 0);
     QWebView* view = new QWebView;
     Monitor mon(view);
 
