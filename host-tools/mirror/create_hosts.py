@@ -16,6 +16,11 @@ urls = []
 cursor = connection.execute("SELECT url FROM responses")
 for row in cursor:
     url = str(row[0]).split("/")[2]
+
+    # strip out the port
+    if ':' in url:
+        url = url.split(":", 1)[0]
+
     if not url in urls:
         urls.append(url)
 
