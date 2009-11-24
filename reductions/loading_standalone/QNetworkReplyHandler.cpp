@@ -223,13 +223,13 @@ void QNetworkReplyHandler::sendResponseIfNeeded()
         response.setHTTPHeaderField(QString::fromAscii(headerName), QString::fromAscii(headerValue));
     }
 #else
-   foreach (QByteArray headerName, m_reply->rawHeaderList()) {
-
+   foreach (QNetworkReply::RawHeaderPair rawHeader, m_reply->rawHeaderPairs()) {
+        const QByteArray headerName = rawHeader.first;
        if (isLocalFileReply
            && (headerName == "Content-Length" || headerName == "Last-Modified"))
            continue;
 
-       response.setHTTPHeaderField(QString::fromAscii(headerName), QString::fromAscii(m_reply->rawHeader(headerName)));
+       response.setHTTPHeaderField(QString::fromAscii(headerName), QString::fromAscii(rawHeader.second));
    }
 
 #endif
