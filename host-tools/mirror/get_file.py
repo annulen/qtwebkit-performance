@@ -20,4 +20,5 @@ if opts.output:
 
 cursor = connection.execute("SELECT data FROM responses WHERE url like ?", [args[1]])
 for row in cursor:
-    print >> out, row[0]
+    if row[0]:
+        out.write(row[0])
