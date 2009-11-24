@@ -280,16 +280,12 @@ void tst_Loading::loadAll()
 
         while (jobsToDo > 0)
             qApp->processEvents();
-    }
 
-    foreach(ResourceHandle* handle, resourceHandles) {
-        qWarning("Perf time: url: %s latency: %g download: %g", qPrintable(handle->request().url().toString()), time_diff(handle->m_createTime, handle->m_responseTime), time_diff(handle->m_createTime, handle->m_finishTime));
+        qDeleteAll(handlerList);
+        qDeleteAll(resourceHandles);
+        handlerList.clear();
+        resourceHandles.clear();
     }
-
-    qDeleteAll(handlerList);
-    qDeleteAll(resourceHandles);
-    handlerList.clear();
-    resourceHandles.clear();
 }
 
 void tst_Loading::byteArrayTestLower()
