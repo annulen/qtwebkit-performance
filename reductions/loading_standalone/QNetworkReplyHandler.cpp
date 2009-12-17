@@ -340,12 +340,12 @@ void QNetworkReplyHandler::start()
     // can send the response as early as possible
     if (scheme == QLatin1String("http") || scheme == QLatin1String("https"))
         connect(m_reply, SIGNAL(metaDataChanged()),
-                this, SLOT(sendResponseIfNeeded()), Qt::QueuedConnection);
+                this, SLOT(sendResponseIfNeeded()), Qt::DirectConnection);
 
     connect(m_reply, SIGNAL(readyRead()),
-            this, SLOT(forwardData()), Qt::QueuedConnection);
+            this, SLOT(forwardData()), Qt::DirectConnection);
     connect(this, SIGNAL(processQueuedItems()),
-            this, SLOT(sendQueuedItems()), Qt::QueuedConnection);
+            this, SLOT(sendQueuedItems()), Qt::DirectConnection);
 }
 
 void QNetworkReplyHandler::resetState()
