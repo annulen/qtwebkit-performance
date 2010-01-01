@@ -25,30 +25,65 @@
 #include <stdlib.h>
 #include <strings.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <linux/types.h>
 #include <linux/netfilter.h>		/* for NF_ACCEPT */
 
 #include <libnetfilter_queue/libnetfilter_queue.h>
 
+#define MICRO_SECONDS  1000000LL
+#define TO_MICRO(tv) (tv->tv_sec * MICRO_SECONDS + tv->tv_usec)
+
 #define MSEC(X) (X*1000)
 static int sleep_for_mode = MSEC(70);
+
+/* the maximum usleep can sleep */
+#define WAIT_MAX 1000000
+
+/* convert the time to microseconds and return the diff */
+static long long diff_time(struct timeval *packet, struct timeval *now)
+{
+    unsigned long long packet_time = TO_MICRO(packet);
+    unsigned long long now_time = TO_MICRO(now);
+
+    return now_time - packet_time;
+}
 
 static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 	      struct nfq_data *nfa, void *data)
 {
 	int id = 0;
 	struct nfqnl_msg_packet_hdr *ph;
+	struct timeval tv, now;
+	long long time_passed;
+	long long wait_time;
 
 	ph = nfq_get_msg_packet_hdr(nfa);
 	if (ph)
 		id = ntohl(ph->packet_id);
 
-        /* check if we can use usleep */
-        if (sleep_for_mode > 1000000)
-                abort();
+	/* figure out how long to delay this single packet */
+	nfq_get_timestamp(nfa, &tv);
+	gettimeofday(&now, NULL);
+	time_passed = diff_time(&tv, &now);
 
-        usleep(sleep_for_mode);
+	/* see how much more we want to wait */
+	wait_time = sleep_for_mode - time_passed;
+	if (wait_time < 0)
+	    goto accept;
+
+        /* for multi second intervals we need to do this */
+	while (wait_time > 0) {
+		long long sleep = wait_time;
+		if (sleep > WAIT_MAX)
+		    sleep = WAIT_MAX;
+
+		usleep(sleep);
+		wait_time -= WAIT_MAX;
+	}
+
+accept:
 	return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
 }
 
@@ -84,7 +119,6 @@ static void handle_options(int argc, char **argv)
 			if (strcasecmp(optarg, "umts") == 0) {
 				sleep_for_mode = MSEC(200);
 			} else if (strcasecmp(optarg, "gsm") == 0) {
-                                fprintf(stderr, "This does not work...\n");
 				sleep_for_mode = MSEC(900);
 			} else if (strcasecmp(optarg, "lan") == 0) {
 				sleep_for_mode = MSEC(70);
