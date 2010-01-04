@@ -28,6 +28,9 @@
 #include "benchmark.h"
 
 #include <QDebug>
+#include <math.h>
+
+#define MSECS(t) (t/1000000)
 
 BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent, int iterations)
     : i(0)
@@ -142,12 +145,13 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
         } else {
             long long run = benchmarkMean(bench);
             long long avg = benchmarkAverage(bench);
+            int stddev = abs(benchmarkStdDeviationBiased(bench));
             printf("%s\tbenchmark: %s\n"
-                   "%s\t\tmean: %12lld nsecs +/-\n"
-                   "%s\t\tavg:  %12lld nsecs\n",
+                   "%s\t\tmean: %8lld msecs +/- %d msecs\n"
+                   "%s\t\tavg:  %8lld msecs\n",
                    qPrintable(indent), qPrintable(bench.name()),
-                   qPrintable(indent), run,
-                   qPrintable(indent), avg);
+                   qPrintable(indent), MSECS(run), MSECS(stddev),
+                   qPrintable(indent), MSECS(avg));
             result.mean += run;
             result.average += avg;
         }
@@ -156,8 +160,8 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
     }
 
     if (indent.isEmpty())
-        printf("Total mean: %12lld nsecs per test, avg: %12lld\n",
-                result.mean / result.size, result.average / result.size);
+        printf("Total mean: %8lld msecs per test, avg: %8lld\n",
+                MSECS(result.mean / result.size), MSECS(result.average / result.size));
     return result;
 }
 
