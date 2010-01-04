@@ -63,6 +63,7 @@ public:
     ~BenchmarkController();
 
     void next();
+    void timeNow();
     int iterations() const;
 
     int i;
@@ -73,6 +74,7 @@ private:
     Benchmark m_benchmark;
     Benchmark* m_parent;
     struct timespec m_start;
+    bool m_timed;
 };
 
 struct SummaryResult {
@@ -115,5 +117,8 @@ extern Benchmark* benchmark_parent;
 #define WEB_BENCHMARK(name) \
     for (BenchmarkController web__controller(name, benchmark_parent); \
          web__controller.i < web__controller.iterations(); web__controller.next())
+
+#define TIME_NOW \
+        web__controller.timeNow();
 
 #endif

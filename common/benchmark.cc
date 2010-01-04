@@ -37,6 +37,7 @@ BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent,
     , m_iterations(iterations)
     , m_benchmark(name)
     , m_parent(parent)
+    , m_timed(false)
 {
     clock_gettime(CLOCK_MONOTONIC, &m_start);
 }
@@ -49,7 +50,9 @@ BenchmarkController::~BenchmarkController()
 
 void BenchmarkController::next()
 {
-    m_benchmark.addResult(timeElapsed());
+    if (!m_timed)
+        m_benchmark.addResult(timeElapsed());
+    m_timed = false;
     ++i;
     clock_gettime(CLOCK_MONOTONIC, &m_start);
 }
@@ -68,6 +71,12 @@ long long BenchmarkController::timeElapsed() const
     long long end = _end.tv_sec * 1000000000 + _end.tv_nsec;
 
     return MSECS(qAbs(end - start));
+}
+
+void BenchmarkController::timeNow()
+{
+    m_benchmark.addResult(timeElapsed());
+    m_timed = true;
 }
 
 Benchmark::Benchmark()

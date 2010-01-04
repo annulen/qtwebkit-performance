@@ -108,6 +108,7 @@ void tst_Loading::load()
         m_view->load(url);
         // really wait for loading..
         ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
+        TIME_NOW;
         m_view->load(QUrl("about:blank"));
         QWebSettings::clearMemoryCaches();
     }
