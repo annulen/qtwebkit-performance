@@ -95,8 +95,8 @@ SummaryResult benchmarkOutput(const Benchmark&, const QString& indent = QString(
 long long benchmarkMean(const Benchmark&);
 long long benchmarkAverage(const Benchmark&);
 long long benchmarkStdError(const Benchmark&);
-long long benchmarkStdDeviationUnbiased(const Benchmark&);
-long long benchmarkStdDeviationBiased(const Benchmark&);
+long double benchmarkStdDeviationUnbiased(const Benchmark&);
+long double benchmarkStdDeviationBiased(const Benchmark&);
 
 
 /*

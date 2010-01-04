@@ -161,4 +161,19 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
     return result;
 }
 
+long double benchmarkStdDeviationBiased(const Benchmark& benchmark)
+{
+    long long mean = benchmarkMean(benchmark);
+    long long squares = 0;
+
+    foreach (long long res, benchmark.results()) {
+        long long delta = res - mean;
+        squares += delta * delta;
+    }
+
+    long double variance = benchmark.results().size() - 1.0;
+    variance = squares / variance;
+    return sqrtl(variance);
+}
+
 Benchmark* benchmark_parent = new Benchmark("total");
