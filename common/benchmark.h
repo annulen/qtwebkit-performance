@@ -75,7 +75,19 @@ private:
     struct timespec m_start;
 };
 
-long long benchmarkOutput(const Benchmark&, const QString& indent = QString());
+struct SummaryResult {
+    SummaryResult()
+        : mean(0)
+        , average(0)
+        , size(0)
+    {}
+
+    long long mean;
+    long long average;
+    int size;
+};
+
+SummaryResult benchmarkOutput(const Benchmark&, const QString& indent = QString());
 
 /*
  * working on the benchmark

@@ -129,29 +129,36 @@ long long benchmarkAverage(const Benchmark& _results)
     return res / _results.results().size();
 }
 
-long long benchmarkOutput(const Benchmark& parent, const QString& indent)
+SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
 {
-    long long total_mean = 0;
+    SummaryResult result;
 
     printf("%sPrinting result for: %s\n", qPrintable(indent), qPrintable(parent.name()));
     foreach(Benchmark bench, parent.benchmarks()) {
         if (!bench.benchmarks().isEmpty()) {
-            total_mean += benchmarkOutput(bench, indent + "\t");
+            SummaryResult sum = benchmarkOutput(bench, indent + "\t");
+            result.mean += sum.mean;
+            result.average += sum.average;
+        } else {
+            long long run = benchmarkMean(bench);
+            long long avg = benchmarkAverage(bench);
+            printf("%s\tbenchmark: %s\n"
+                   "%s\t\tmean: %12lld nsecs +/-\n"
+                   "%s\t\tavg:  %12lld nsecs\n",
+                   qPrintable(indent), qPrintable(bench.name()),
+                   qPrintable(indent), run,
+                   qPrintable(indent), avg);
+            result.mean += run;
+            result.average += avg;
         }
 
-        long long run = benchmarkMean(bench);
-        printf("%s\tbenchmark: %s\n"
-               "%s\t\tmean: %12lld nsecs\n"
-               "%s\t\tavg:  %12lld nsecs\n",
-                qPrintable(indent), qPrintable(bench.name()),
-                qPrintable(indent), run,
-                qPrintable(indent), benchmarkAverage(bench));
-        total_mean += run;
+        ++result.size;
     }
 
     if (indent.isEmpty())
-        printf("Total mean: %12lld\n", total_mean);
-    return total_mean;
+        printf("Total mean: %12lld nsecs per test, avg: %12lld\n",
+                result.mean / result.size, result.average / result.size);
+    return result;
 }
 
 Benchmark* benchmark_parent = new Benchmark("total");
