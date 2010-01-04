@@ -67,7 +67,7 @@ long long BenchmarkController::timeElapsed() const
     long long start = m_start.tv_sec * 1000000000 + m_start.tv_nsec;
     long long end = _end.tv_sec * 1000000000 + _end.tv_nsec;
 
-    return qAbs(end - start);
+    return MSECS(qAbs(end - start));
 }
 
 Benchmark::Benchmark()
@@ -150,8 +150,8 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
                    "%s\t\tmean: %8lld msecs +/- %d msecs\n"
                    "%s\t\tavg:  %8lld msecs\n",
                    qPrintable(indent), qPrintable(bench.name()),
-                   qPrintable(indent), MSECS(run), MSECS(stddev),
-                   qPrintable(indent), MSECS(avg));
+                   qPrintable(indent), run, stddev,
+                   qPrintable(indent), avg);
             result.mean += run;
             result.average += avg;
         }
@@ -161,23 +161,25 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
 
     if (indent.isEmpty())
         printf("Total mean: %8lld msecs per test, avg: %8lld\n",
-                MSECS(result.mean / result.size), MSECS(result.average / result.size));
+                result.mean / result.size, result.average / result.size);
     return result;
 }
 
-long double benchmarkStdDeviationBiased(const Benchmark& benchmark)
+double benchmarkStdDeviationBiased(const Benchmark& benchmark)
 {
     long long mean = benchmarkMean(benchmark);
     long long squares = 0;
 
     foreach (long long res, benchmark.results()) {
         long long delta = res - mean;
-        squares += delta * delta;
+        squares += (delta * delta);
+        if (squares < 0)
+            qFatal("numbers wrapped");
     }
 
-    long double variance = benchmark.results().size() - 1.0;
+    double variance = benchmark.results().size() - 1.0;
     variance = squares / variance;
-    return sqrtl(variance);
+    return sqrt(variance);
 }
 
 Benchmark* benchmark_parent = new Benchmark("total");
