@@ -6,3 +6,5 @@ QT += testlib network webkit
 # install target
 target.path += $$[QT_INSTALL_BINS]/benchmark
 INSTALLS += target
+
+SOURCES += ../../common/benchmark.cc
