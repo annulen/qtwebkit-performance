@@ -147,10 +147,10 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
             long long avg = benchmarkAverage(bench);
             int stddev = abs(benchmarkStdDeviationBiased(bench));
             printf("%s\tbenchmark: %s\n"
-                   "%s\t\tmean: %8lld msecs +/- %d msecs\n"
+                   "%s\t\tmean: %8lld msecs +/- %d msecs, +/- %f %%\n"
                    "%s\t\tavg:  %8lld msecs\n",
                    qPrintable(indent), qPrintable(bench.name()),
-                   qPrintable(indent), run, stddev,
+                   qPrintable(indent), run, stddev, (stddev * 100.0) / run,
                    qPrintable(indent), avg);
             result.mean += run;
             result.average += avg;
