@@ -76,7 +76,6 @@ QList<QUrl> test_urls()
     urls << QUrl("http://www.google.co.kr/");
     urls << QUrl("http://www.auction.co.kr");
     urls << QUrl("http://www.youtube.com/?hl=ko-KR");
-    urls << QUrl("http://www.linuxtogo.org/~zecke/image-stress-test.html");
 
     return urls;
 }
