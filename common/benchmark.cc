@@ -112,4 +112,46 @@ QList<long long> Benchmark::results() const
     return m_results;
 }
 
+long long benchmarkMean(const Benchmark& _results)
+{
+    QList<long long> results = _results.results();
+    qSort(results);
+
+    return results.at(results.size() / 2);
+}
+
+long long benchmarkAverage(const Benchmark& _results)
+{
+    long long res = 0;
+    foreach(long long val, _results.results())
+        res += val;
+
+    return res / _results.results().size();
+}
+
+long long benchmarkOutput(const Benchmark& parent, const QString& indent)
+{
+    long long total_mean = 0;
+
+    printf("%sPrinting result for: %s\n", qPrintable(indent), qPrintable(parent.name()));
+    foreach(Benchmark bench, parent.benchmarks()) {
+        if (!bench.benchmarks().isEmpty()) {
+            total_mean += benchmarkOutput(bench, indent + "\t");
+        }
+
+        long long run = benchmarkMean(bench);
+        printf("%s\tbenchmark: %s\n"
+               "%s\t\tmean: %12lld nsecs\n"
+               "%s\t\tavg:  %12lld nsecs\n",
+                qPrintable(indent), qPrintable(bench.name()),
+                qPrintable(indent), run,
+                qPrintable(indent), benchmarkAverage(bench));
+        total_mean += run;
+    }
+
+    if (indent.isEmpty())
+        printf("Total mean: %12lld\n", total_mean);
+    return total_mean;
+}
+
 Benchmark* benchmark_parent = new Benchmark("total");

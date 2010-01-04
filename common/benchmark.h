@@ -50,8 +50,6 @@ public:
     void addResult(long long result);
     QList<long long> results() const;
 
-    QList<QPair<QString, long long> > computedResults();
-
 private:
     bool m_empty;
     QString m_name;
@@ -77,16 +75,16 @@ private:
     struct timespec m_start;
 };
 
-void benchmarkOutput(const Benchmark&);
+long long benchmarkOutput(const Benchmark&, const QString& indent = QString());
 
 /*
  * working on the benchmark
  */
-qreal benchmarkMean(const Benchmark&);
-qreal benchmarkAverage(const Benchmark&);
-qreal benchmarkStdError(const Benchmark&);
-qreal benchmarkStdDeviationUnbiased(const Benchmark&);
-qreal benchmarkStdDeviationBiased(const Benchmark&);
+long long benchmarkMean(const Benchmark&);
+long long benchmarkAverage(const Benchmark&);
+long long benchmarkStdError(const Benchmark&);
+long long benchmarkStdDeviationUnbiased(const Benchmark&);
+long long benchmarkStdDeviationBiased(const Benchmark&);
 
 
 /*
