@@ -56,7 +56,6 @@ QList<QUrl> test_urls()
     urls << QUrl("http://www.facebook.com");
     urls << QUrl("http://www.gmail.com");
     urls << QUrl("http://mail.yahoo.com");
-    urls << QUrl("http://www.flickr.com");
     urls << QUrl("http://hi5.com");
     urls << QUrl("http://www.dailymotion.com");
     urls << QUrl("http://youporn.com");
