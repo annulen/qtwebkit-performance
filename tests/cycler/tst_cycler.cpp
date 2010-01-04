@@ -19,6 +19,7 @@
 
 #include <QtTest/QtTest>
 
+#include "benchmark.h"
 #include "common_init.h"
 
 #include <qwebframe.h>
@@ -53,18 +54,25 @@ class tst_Loading : public QObject
     Q_OBJECT
 
 public:
+    ~tst_Loading();
 
 public Q_SLOTS:
     void init();
     void cleanup();
 
 private Q_SLOTS:
+    void load_data();
     void load();
 
 private:
     QWebView* m_view;
     QWebPage* m_page;
 };
+
+tst_Loading::~tst_Loading()
+{
+    benchmarkOutput(*benchmark_parent);
+}
 
 void tst_Loading::init()
 {
@@ -87,17 +95,19 @@ void tst_Loading::cleanup()
     delete m_view;
 }
 
+void tst_Loading::load_data()
+{
+    add_test_urls();
+}
+
 void tst_Loading::load()
 {
-    const QList<QUrl> urls = test_urls();
+    QFETCH(QUrl, url);
 
-    QBENCHMARK {
-        foreach(const QUrl& url, urls) {
-            m_view->load(url);
-            // really wait for loading..
-            ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
-        }
-
+    WEB_BENCHMARK(url.toString()) {
+        m_view->load(url);
+        // really wait for loading..
+        ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
         m_view->load(QUrl("about:blank"));
         QWebSettings::clearMemoryCaches();
     }
