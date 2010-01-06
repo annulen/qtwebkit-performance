@@ -26,6 +26,8 @@
 #include "QNetworkReplyHandler.h"
 #include "WebCore_classes.h"
 
+#include "benchmark.h"
+
 #include <time.h>
 
 using namespace WebCore;
@@ -35,6 +37,7 @@ class tst_Loading : public QObject
     Q_OBJECT
 
 public:
+    ~tst_Loading();
 
 private Q_SLOTS:
     void loadAll();
@@ -83,10 +86,15 @@ static double time_diff(struct timespec _start, struct timespec _end)
     return (end - start) / 1000000000.0;
 }
 
+tst_Loading::~tst_Loading()
+{
+    benchmarkOutput(*benchmark_parent);
+}
+
 void tst_Loading::loadAll()
 {
 
-    QBENCHMARK {
+    WEB_BENCHMARK("loadAll") {
         Client client;
 
         createJob(&client, QUrl("http://en.wikipedia.org/wiki/Maxwell_equations"));
