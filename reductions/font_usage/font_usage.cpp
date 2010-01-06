@@ -9,7 +9,7 @@ private Q_SLOTS:
 
 void tst_font_usage::testQFont()
 {
-    QBENCHMARK {
+    QBENCHMARK_ONCE {
         QFont font0;
         font0.setFamily(QString::fromUtf8("Arial"));
         font0.setPixelSize(11);
