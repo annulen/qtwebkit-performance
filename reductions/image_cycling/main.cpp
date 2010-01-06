@@ -1,6 +1,7 @@
 #include <QtTest/QtTest>
 
 #include "ImageDecoderQt.h"
+#include "benchmark.h"
 
 using WebCore::ImageDecoderQt;
 using WebCore::ImageDecoder;
@@ -39,6 +40,10 @@ class tst_ImageLoading : public QObject {
 
 public:
     tst_ImageLoading() {}
+    ~tst_ImageLoading()
+    {
+         benchmarkOutput(*benchmark_parent);
+    }
 
 private Q_SLOTS:
     void testLoading();
@@ -2072,7 +2077,7 @@ QByteArray data997 = readFile("data/data997");
 QByteArray data998 = readFile("data/data998");
 QByteArray data999 = readFile("data/data999");
 
-    QBENCHMARK {
+    WEB_BENCHMARK("image-foo") {
 OwnPtr<ImageDecoderQt> decoder0 = ImageDecoder::create(&data000);
 decoder0->setData(&data000, 0);
 decoder0->isSizeAvailable();
