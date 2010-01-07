@@ -20,6 +20,7 @@
 #include <QtTest/QtTest>
 
 #include "common_init.h"
+#include "benchmark.h"
 
 #include <qwebframe.h>
 #include <qwebview.h>
@@ -53,6 +54,7 @@ class tst_Painting : public QObject
     Q_OBJECT
 
 public:
+    ~tst_Painting();
 
 public Q_SLOTS:
     void init();
@@ -66,6 +68,11 @@ private:
     QWebView* m_view;
     QWebPage* m_page;
 };
+
+tst_Painting::~tst_Painting()
+{
+    benchmarkOutput(*benchmark_parent);
+}
 
 void tst_Painting::init()
 {
@@ -99,7 +106,7 @@ void tst_Painting::paint()
     mainFrame->toPlainText();
 
     QPixmap pixmap(m_page->viewportSize());
-    QBENCHMARK {
+    WEB_BENCHMARK(url.toString()) {
         QPainter painter(&pixmap);
         mainFrame->render(&painter, QRect(QPoint(0, 0), m_page->viewportSize()));
         painter.end();
