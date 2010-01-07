@@ -99,6 +99,7 @@ public:
     Crawler(const QString& startUrl)
         : m_startUrl(startUrl)
         , m_webView(0)
+        , m_playGame(false)
     {}
 
     void setView(QWebView* view)
@@ -110,6 +111,11 @@ public:
                 SLOT(loadFinished(bool)), Qt::QueuedConnection);
     }
 
+    void setGameMode(bool playGame)
+    {
+        m_playGame = playGame;
+    }
+
 public Q_SLOTS:
     void start()
     {
@@ -119,6 +125,18 @@ public Q_SLOTS:
 private Q_SLOTS:
     void loadFinished(bool finished)
     {
+        /* a little game mode */
+        if (m_playGame) {
+            if (!finished) {
+                qFatal("Game Over... Loading failed..");
+            } else {
+                start();
+            }
+
+            return;
+        }
+
+
         if (!finished) {
             qWarning() << "Load failed trying the start";
             QMetaObject::invokeMethod(this, "start", Qt::QueuedConnection);
@@ -177,6 +195,7 @@ private:
     QBasicTimer m_timeout;
     QWebView* m_webView;
     QString m_lastTarget;
+    bool m_playGame;
 };
 
 
@@ -195,7 +214,8 @@ int main(int argc, char **argv)
     qWarning() << arguments;
 
     Crawler crawler(arguments.size() >= 2 ? arguments.at(1) : QLatin1String("http://www.digg.com"));
-    view->show();
+    crawler.setGameMode(arguments.size() >= 3);
+    view->showMaximized();
     crawler.setView(view);
     crawler.start();
 
