@@ -126,7 +126,7 @@ private Q_SLOTS:
         }
 
         // pick a random link.
-        QList<QWebElement> result = m_webView->page()->mainFrame()->findAllElements("a");
+        QList<QWebElement> result = m_webView->page()->mainFrame()->findAllElements("a").toList();
         if (result.isEmpty())
             return start();
 
