@@ -94,6 +94,15 @@ void tst_Loading::load()
 {
     const QList<QUrl> urls = test_urls();
 
+    // warmup
+    foreach(const QUrl& url, urls) {
+        m_view->load(url);
+        // really wait for loading..
+        ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
+        m_view->load(QUrl("about:blank"));
+        QWebSettings::clearMemoryCaches();
+    }
+
     WEB_BENCHMARK("all_loads") {
         foreach(const QUrl& url, urls) {
             m_view->load(url);
