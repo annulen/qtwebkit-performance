@@ -20,6 +20,7 @@
 #include <QtTest/QtTest>
 
 #include "common_init.h"
+#include "benchmark.h"
 
 #include <qwebframe.h>
 #include <qwebview.h>
@@ -53,6 +54,7 @@ class tst_Scrolling : public QObject
     Q_OBJECT
 
 public:
+    ~tst_Scrolling();
 
 public Q_SLOTS:
     void init();
@@ -66,6 +68,11 @@ private:
     QWebView* m_view;
     QWebPage* m_page;
 };
+
+tst_Scrolling::~tst_Scrolling()
+{
+    benchmarkOutput(*benchmark_parent);
+}
 
 void tst_Scrolling::init()
 {
@@ -105,7 +112,7 @@ void tst_Scrolling::scroll()
     /* force a layout */
     QWebFrame* mainFrame = m_page->mainFrame();
 
-    QBENCHMARK {
+    WEB_BENCHMARK(url.toString()) {
         mainFrame->setScrollPosition(QPoint(0, 0));
         m_view->update();
 
