@@ -4,7 +4,8 @@ DEPENDPATH += ../../common
 QT += testlib network webkit
 
 # install target
-target.path += $$[QT_INSTALL_BINS]/benchmark
+isEmpty(INSTALL_DIR): INSTALL_DIR = $$[QT_INSTALL_BINS]
+target.path += $$INSTALL_DIR/qtwebkit-benchmark
 INSTALLS += target
 
 SOURCES += ../../common/benchmark.cc
