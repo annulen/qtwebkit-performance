@@ -113,6 +113,7 @@ void tst_Loading::load()
 
         TIME_NOW
         m_view->load(QUrl("about:blank"));
+        ::waitForSignal(m_view, SIGNAL(loadFinished(bool)), 1000);
         QWebSettings::clearMemoryCaches();
     }
 }
