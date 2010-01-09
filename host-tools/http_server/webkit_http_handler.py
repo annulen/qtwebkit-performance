@@ -41,12 +41,11 @@ def send_header(req, header):
             print req.log_error("HEader: '%s' '%s'" % (tag, value))
 
 def send_response(req, query):
-    if query[0] == 200 or query[0] == 204:
-        send_header(req, query[1])
+    req.status = query[0]
+    send_header(req, query[1])
+    if query[0] != 204:
         req.write(query[2])
-        return True
-
-    return None
+    return True
 
 def handle_uri(connection, req, uri):
     uri = "http://" + req.hostname + req.unparsed_uri
