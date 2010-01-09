@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("setting copy_packet mode\n");
-	if (nfq_set_mode(qh, NFQNL_COPY_PACKET, 0xffff) < 0) {
+	if (nfq_set_mode(qh, NFQNL_COPY_META, 0xffff) < 0) {
 		fprintf(stderr, "can't set packet_copy mode\n");
 		exit(1);
 	}
