@@ -668,5 +668,10 @@ void tst_Loading::dateParsingPosix()
     }
 }
 
-QTEST_MAIN(tst_Loading)
+int main(int argc, char **argv)
+{
+    QCoreApplication app(argc, argv);
+    tst_Loading tc;
+    return QTest::qExec(&tc, argc, argv);
+}
 #include "tst_loading.moc"
