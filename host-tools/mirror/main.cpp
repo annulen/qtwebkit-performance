@@ -249,7 +249,7 @@ public Q_SLOTS:
     void allLoaded()
     {
         qApp->processEvents();
-        QTimer::singleShot(2000, this, SLOT(reallyLeave()));
+        QTimer::singleShot(6000, this, SLOT(reallyLeave()));
     }
 
     void reallyLeave()
