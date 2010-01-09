@@ -138,7 +138,6 @@ bool HttpRequestThread::search(const QByteArray& req, QByteArray& response,
     }
 
     if (!query.next()) {
-        qWarning() << "Stepping to first result failed";
         return false;
     }
 
@@ -170,7 +169,6 @@ HttpRequest HttpRequestThread::parseHeader()
                     qWarning("Unhandled operation: %p '%s'", this, line.data());
                 }
             } else if (line == "\r\n") {
-                qWarning("Request is %p '%d' uri: '%s'", this, req.request, req.uri.data());
                 return req;
             } else if (line.toLower().startsWith("host: ")) {
                 req.host = line.mid(sizeof "host: " - 1).trimmed();
@@ -213,8 +211,6 @@ bool HttpRequestThread::sendFile(const HttpRequest& req)
 
 void HttpRequestThread::run()
 {
-    qWarning() << "=> New connection" << this;
-
     m_socket = new QTcpSocket();
 
     if (!m_socket->setSocketDescriptor(m_fd)) {
@@ -228,9 +224,10 @@ void HttpRequestThread::run()
     sendFile(parseHeader());
     m_socket->flush();
     m_socket->disconnectFromHost();
-    m_socket->waitForDisconnected();
+
+    if (m_socket->state() != QAbstractSocket::UnconnectedState)
+        m_socket->waitForDisconnected();
     delete m_socket;
-    qWarning() << "<= Closing down" << this;
 }
 
 
