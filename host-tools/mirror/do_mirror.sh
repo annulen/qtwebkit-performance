@@ -12,7 +12,7 @@ WEBSITES="$WEBSITES http://bbc.co.uk http://www.guardian.co.uk http://www.google
 
 # English entertainment
 WEBSITES="$WEBSITES http://flickr.com http://www.youtube.com/?hl=en_US http://myspace.com http://www.twitter.com http://twitter.com/BARACKOBAMA"
-WEBSITES="$WEBSITES http://reddit.com http://www.facebook.com http://www.gmail.com http://mail.yahoo.com http://www.flickr.com"
+WEBSITES="$WEBSITES http://reddit.com http://www.facebook.com http://www.gmail.com http://mail.yahoo.com"
 WEBSITES="$WEBSITES http://hi5.com http://www.dailymotion.com"
 
 # From the top50 of webites... well adult content... it exists... no kidding... don't go there if you are legally not allowed
