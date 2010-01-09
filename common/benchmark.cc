@@ -201,6 +201,11 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
                    qPrintable(indent), qPrintable(bench.name()),
                    qPrintable(indent), run, stddev, (stddev * 100.0) / run,
                    qPrintable(indent), avg);
+            printf("%s\t\t\t", qPrintable(indent));
+            foreach(long long res, bench.results()) {
+                printf("%lld, ", res);
+            }
+            printf("\n");
             result.mean += run;
             result.average += avg;
         }
