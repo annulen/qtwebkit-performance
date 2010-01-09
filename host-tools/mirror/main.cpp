@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies)
- * Copyright (C) 2009 Holger Hans Peter Freyther
+ * Copyright (C) 2009, 2010 Nokia Corporation and/or its subsidiary(-ies)
+ * Copyright (C) 2009, 2010 Holger Hans Peter Freyther
  *
  * All rights reserved.
  *
@@ -34,6 +34,7 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QTimer>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QNetworkReply>
 
@@ -248,6 +249,11 @@ public Q_SLOTS:
     void allLoaded()
     {
         qApp->processEvents();
+        QTimer::singleShot(2000, this, SLOT(reallyLeave()));
+    }
+
+    void reallyLeave()
+    {
         exit(0);
     }
 };
