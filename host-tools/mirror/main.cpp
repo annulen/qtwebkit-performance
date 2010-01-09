@@ -75,7 +75,8 @@ public:
 
     ~NetworkReplyProxy()
     {
-        writeData();
+        if (m_reply->url().scheme() != "data")
+            writeData();
         delete m_reply;
     }
 
