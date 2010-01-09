@@ -116,6 +116,10 @@ extern Benchmark* benchmark_parent;
     for (BenchmarkController web__controller(name, benchmark_parent); \
          web__controller.i < web__controller.iterations(); web__controller.next())
 
+#define WEB_BENCHMARK_ITER(name, iter) \
+    for (BenchmarkController web__controller(name, benchmark_parent, iter); \
+         web__controller.i < web__controller.iterations(); web__controller.next())
+
 #define TIME_NOW \
         web__controller.timeNow();
 
