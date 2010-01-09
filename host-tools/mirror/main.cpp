@@ -162,7 +162,10 @@ void NetworkReplyProxy::writeData()
     QByteArray httpHeader;
     QList<QByteArray> headers = rawHeaderList();
     foreach(QByteArray header, headers) {
-        if (header.toLower() == "content-encoding" || header.toLower() == "transfer-encoding" || header.toLower() == "content-length")
+        if (header.toLower() == "content-encoding"
+            || header.toLower() == "transfer-encoding"
+            || header.toLower() == "content-length"
+            || header.toLower() == "connection")
             continue;
 
         // special case for cookies.... we need to generate separate lines
