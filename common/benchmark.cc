@@ -91,7 +91,7 @@ BenchmarkController::~BenchmarkController()
 
 void BenchmarkController::next()
 {
-    if (!m_timed)
+    if (!m_timed && i != 0)
         m_benchmark.addResult(timeElapsed());
     m_timed = false;
     ++i;
@@ -114,7 +114,8 @@ long long BenchmarkController::timeElapsed() const
 
 void BenchmarkController::timeNow()
 {
-    m_benchmark.addResult(timeElapsed());
+    if (i != 0)
+        m_benchmark.addResult(timeElapsed());
     m_timed = true;
 }
 

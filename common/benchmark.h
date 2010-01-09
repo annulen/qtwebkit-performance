@@ -58,7 +58,7 @@ private:
 
 class BenchmarkController {
 public:
-    BenchmarkController(const QString& name, Benchmark *parent, int iterations = 10);
+    BenchmarkController(const QString& name, Benchmark *parent, int iterations = 11);
     ~BenchmarkController();
 
     void next();
