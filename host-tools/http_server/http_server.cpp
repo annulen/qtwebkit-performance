@@ -24,7 +24,7 @@
 
 #include <QCoreApplication>
 #include <QStringList>
-#include <QThread>
+#include <QThreadPool>
 #include <QUrl>
 #include <QVariant>
 
@@ -60,8 +60,7 @@ HttpRequest::HttpRequest()
     : request(Request_Unknown)
 {}
 
-class HttpRequestThread : public QThread {
-    Q_OBJECT
+class HttpRequestThread : public QRunnable {
 public:
     HttpRequestThread(int socket);
     ~HttpRequestThread();
@@ -87,24 +86,30 @@ class HttpServer : public QTcpServer {
 public:
     HttpServer(QObject*);
     void incomingConnection(int socketDescriptor);
+
+private:
+    QThreadPool m_pool;
 };
 
 HttpServer::HttpServer(QObject* parent)
     : QTcpServer(parent)
-{}
+{
+    m_pool.setMaxThreadCount(8);
+}
 
 void HttpServer::incomingConnection(int fd)
 {
-    QThread* thread = new HttpRequestThread(fd);
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    thread->start();
+    QRunnable* thread = new HttpRequestThread(fd);
+    m_pool.start(thread);
 }
 
 
 HttpRequestThread::HttpRequestThread(int fd)
     : m_fd(fd)
     , m_socket(0)
-{}
+{
+    setAutoDelete(true);
+}
 
 HttpRequestThread::~HttpRequestThread()
 {
