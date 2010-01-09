@@ -203,6 +203,7 @@ bool HttpRequestThread::sendFile(const HttpRequest& req)
     }
 
     m_socket->write("HTTP/1.1 " + response + " OK\r\n");
+    m_socket->write("Connection: close\r\n");
     m_socket->write(headers);
     m_socket->write(data);
 
