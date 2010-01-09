@@ -21,7 +21,6 @@ from mod_python import apache
 import sqlite3
 
 def send_header(req, header):
-    req.log_error("%s" % header)
     list = ("%s" % header).split("\n")
     for header in list:
         if header[-1:] == '\r':
@@ -38,7 +37,6 @@ def send_header(req, header):
             req.headers_out.add('set-cookie', value)
         else:
             req.headers_out[tag] = value
-            print req.log_error("HEader: '%s' '%s'" % (tag, value))
 
 def send_response(req, query):
     req.status = query[0]
@@ -85,19 +83,5 @@ def handler(req):
     req.log_error("Could not find URI: hostname: %s uri: %s" % (req.hostname, req.unparsed_uri))
     req.status = apache.HTTP_NOT_FOUND
     req.content_type = "text/plain"
-    req.write("NADA NADA NADA NADA NADA NJENTE\n");
-    req.write(req.filename + "\n")
-    req.write(req.uri + "\n")
-    req.write(req.unparsed_uri + "\n")
-    #req.write(hostinfo + "\n")
-    req.write(req.hostname + "\n")
-
-    str = ""
-    if req.parsed_uri[apache.URI_QUERY]:
-        str += "query: '" + req.parsed_uri[apache.URI_QUERY] + "'"
-    if req.parsed_uri[apache.URI_FRAGMENT]:
-        str += "frag: '" + req.parsed_uri[apache.URI_FRAGMENT] + "'"
-    if req.parsed_uri[apache.URI_PATH]:
-        str += "path: '" + req.parsed_uri[apache.URI_PATH] + "'"
-    req.log_error(str)
+    req.write("http://%s%s not found" % (req.hostname, req.unparsed_uri))
     return apache.OK
