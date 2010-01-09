@@ -30,7 +30,6 @@
 
 #include <QPair>
 #include <QString>
-#include <time.h>
 
 /**
  * Benchmark related functionality
@@ -73,7 +72,6 @@ private:
     const int m_iterations;
     Benchmark m_benchmark;
     Benchmark* m_parent;
-    struct timespec m_start;
     bool m_timed;
 };
 

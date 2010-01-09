@@ -29,8 +29,47 @@
 
 #include <QDebug>
 #include <math.h>
+#include <signal.h>
+
+#include <time.h>
+#include <sys/time.h>
 
 #define MSECS(t) (t/1000000)
+
+static unsigned int sig_prof = 0;
+
+static void sig_profiling(int)
+{
+    ++sig_prof;
+}
+
+static void startTimer()
+{
+    struct itimerval tim;
+    tim.it_interval.tv_sec = 0;
+    tim.it_interval.tv_usec = 1;
+    tim.it_value.tv_sec = 0;
+    tim.it_value.tv_usec = 1;
+    setitimer(ITIMER_PROF, &tim, 0);
+}
+
+static void stopTimer()
+{
+    setitimer(ITIMER_PROF, 0, 0);
+}
+
+static void __attribute__((constructor)) benchmark_init()
+{
+    struct sigaction sa;
+    sa.sa_handler = sig_profiling;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    if (sigaction(SIGPROF, &sa, 0) != 0) {
+        fprintf(stderr, "Failed to register signal handler.\n");
+        exit(-1);
+    }
+
+}
 
 BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent, int iterations)
     : i(0)
@@ -39,7 +78,9 @@ BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent,
     , m_parent(parent)
     , m_timed(false)
 {
-    clock_gettime(CLOCK_MONOTONIC, &m_start);
+    stopTimer();
+    sig_prof = 0;
+    startTimer();
 }
 
 BenchmarkController::~BenchmarkController()
@@ -54,7 +95,10 @@ void BenchmarkController::next()
         m_benchmark.addResult(timeElapsed());
     m_timed = false;
     ++i;
-    clock_gettime(CLOCK_MONOTONIC, &m_start);
+
+    stopTimer();
+    sig_prof = 0;
+    startTimer();
 }
 
 int BenchmarkController::iterations() const
@@ -64,13 +108,8 @@ int BenchmarkController::iterations() const
 
 long long BenchmarkController::timeElapsed() const
 {
-    struct timespec _end;
-    clock_gettime(CLOCK_MONOTONIC, &_end);
-
-    long long start = m_start.tv_sec * 1000000000 + m_start.tv_nsec;
-    long long end = _end.tv_sec * 1000000000 + _end.tv_nsec;
-
-    return MSECS(qAbs(end - start));
+    stopTimer();
+    return sig_prof;
 }
 
 void BenchmarkController::timeNow()
