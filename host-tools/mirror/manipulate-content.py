@@ -18,7 +18,7 @@ def to_num(length):
         return 0
     return int(length)
 
-def header_content_length(header, new_length):
+def header_content_length(old_header, new_length):
     """
     Update the Content Length
     """
@@ -34,13 +34,17 @@ def header_content_length(header, new_length):
     return old_header.replace(old_header[start:end], new_entry, 1)
 
 
-cur = connection.execute("SELECT url, header, LENGTH(data) from responses")
-for row in cur:
-    old_header = str(row[1])
+def update_header():
+    cur = connection.execute("SELECT url, header, LENGTH(data) from responses")
+    for row in cur:
+        old_header = str(row[1])
 
-    new_header = header_content_length(old_header, to_num(row[2]))
-    if not new_header:
-        continue
+        new_header = header_content_length(old_header, to_num(row[2]))
+        if not new_header:
+            continue
 
-    connection.execute("UPDATE responses SET header = ? WHERE url like ?", [new_header, row[0]])
+        connection.execute("UPDATE responses SET header = ? WHERE url like ?", [new_header, row[0]])
+
+
+update_header()
 connection.commit()
