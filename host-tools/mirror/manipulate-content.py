@@ -45,6 +45,16 @@ def update_header():
 
         connection.execute("UPDATE responses SET header = ? WHERE url like ?", [new_header, row[0]])
 
+def update_content():
+    cur = connection.execute("SELECT url, data from responses")
+    for row in cur:
+        data = str(row[1])
+        if not "Math.random()" in data:
+            continue
 
+        data = buffer(data.replace("Math.random()", "0.5"))
+        connection.execute("UPDATE responses SET data = ? WHERE url like ?", [data, row[0]])
+
+update_content()
 update_header()
 connection.commit()
