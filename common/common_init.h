@@ -38,14 +38,14 @@ QList<QUrl> test_urls()
 {
     QList<QUrl> urls;
     urls << QUrl("http://us.yahoo.com");
-    urls << QUrl("http://google.com/ncr");
+    urls << QUrl("http://www.google.com/ncr");
     urls << QUrl("http://maps.google.com");
     urls << QUrl("http://www.apple.com");
     urls << QUrl("http://amazon.com");
     urls << QUrl("http://ebay.com");
     urls << QUrl("http://bbc.co.uk");
     urls << QUrl("http://www.guardian.co.uk");
-    urls << QUrl("http://google.com/news/?hl=en");
+    urls << QUrl("http://www.google.com/news?ned=us");
     urls << QUrl("http://news.yahoo.com");
     urls << QUrl("http://flickr.com");
     urls << QUrl("http://www.youtube.com/?hl=en_US");
@@ -59,7 +59,7 @@ QList<QUrl> test_urls()
     urls << QUrl("http://hi5.com");
     urls << QUrl("http://www.dailymotion.com");
     urls << QUrl("http://youporn.com");
-    urls << QUrl("http://www.microsoft.com");
+    urls << QUrl("http://www.microsoft.com/en/us/default.aspx");
     urls << QUrl("http://www.live.com");
     urls << QUrl("http://www.wikipedia.org");
     urls << QUrl("http://en.wikipedia.org");

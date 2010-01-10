@@ -2,7 +2,7 @@
 # Websites we want to mirror
 
 # English
-WEBSITES="http://us.yahoo.com http://google.com/ http://maps.google.com http://www.apple.com"
+WEBSITES="http://us.yahoo.com http://google.com/ http://www.google.com/ncr http://maps.google.com http://www.apple.com"
 
 # shopping
 WEBSITES="$WEBSITES http://amazon.com http://ebay.com"
@@ -20,7 +20,7 @@ WEBSITES="$WEBSITES http://youporn.com"
 
 
 # From the top 50 of alexa.com
-WEBSITES="$WEBSITES http://www.microsoft.com http://www.live.com http://www.wikipedia.org http://en.wikipedia.org"
+WEBSITES="$WEBSITES http://www.microsoft.com/en/us/default.aspx http://www.live.com http://www.wikipedia.org http://en.wikipedia.org"
 WEBSITES="$WEBSITES http://www.wordpress.com http://www.rapidshare.com http://www.blogger.com http://www.bing.com"
 WEBSITES="$WEBSITES http://www.imdb.com http://www.linkedin.com"
 
