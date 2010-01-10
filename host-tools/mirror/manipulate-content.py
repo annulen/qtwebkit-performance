@@ -45,14 +45,39 @@ def update_header():
 
         connection.execute("UPDATE responses SET header = ? WHERE url like ?", [new_header, row[0]])
 
+def replace_math_random(header):
+    """
+    Remove occurences of Math.random and replace it with
+    a constant number. Currently 0.5 but there is no special
+    reason for doing so.
+    """
+
+    if not "Math.random()" in str(header):
+        return header
+
+    return buffer(str(header).replace("Math.random()", "0.5"))
+
+def replace_get_time(header):
+    """
+    Replace new Date().getTime()...
+    """
+
+    if not "new Date().getTime()" in str(header):
+        return header
+    return buffer(str(header).replace("new Date().getTime()", "1263154443910"))
+
 def update_content():
     cur = connection.execute("SELECT url, data from responses")
     for row in cur:
-        data = str(row[1])
-        if not "Math.random()" in data:
+        old_data = str(row[1])
+        data = old_data
+
+        data = replace_math_random(data)
+        data = replace_get_time(data)
+
+        if old_data == data:
             continue
 
-        data = buffer(data.replace("Math.random()", "0.5"))
         connection.execute("UPDATE responses SET data = ? WHERE url like ?", [data, row[0]])
 
 update_content()
