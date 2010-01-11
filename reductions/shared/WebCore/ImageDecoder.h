@@ -125,7 +125,7 @@ namespace WebCore {
         }
 
         void setDecodedImage(const QImage& image);
-        QImage decodedImage() const { return m_image; }
+        //QImage decodedImage() const { return m_image; }
 
     private:
         RGBA32Buffer& operator=(const RGBA32Buffer& other);
@@ -135,7 +135,12 @@ namespace WebCore {
 
         inline PixelData* getAddr(int x, int y)
         {
-            return reinterpret_cast<QRgb*>(m_image.scanLine(y)) + x;
+#ifdef WEBCORE_DECODER
+            PixelData* data = (PixelData*) (m_bytes.data());
+            return data + (y * width()) + x;
+#else
+            qFatal("Not supported");
+#endif
         }
 
         inline void setRGBA(PixelData* dest, unsigned r, unsigned g, unsigned b, unsigned a)
@@ -159,7 +164,12 @@ namespace WebCore {
         uint8_t m_status; // Whether or not this frame is completely finished decoding.
         uint8_t m_disposalMethod;
         bool m_hasAlpha;
+#ifdef WEBCORE_DECODER
+        QByteArray m_bytes;
+        QSize m_size;
+#else
         mutable QImage m_image;
+#endif
     };
 
     // The ImageDecoder class represents a base class for specific image format decoders
@@ -186,7 +196,11 @@ namespace WebCore {
         // Factory function to create an ImageDecoder.  Ports that subclass
         // ImageDecoder can provide their own implementation of this to avoid
         // needing to write a dedicated setData() implementation.
+#ifdef WEBCORE_DECODER
+        static ImageDecoder* create(const QByteArray* data);
+#else
         static ImageDecoderQt* create(const QByteArray* data);
+#endif
 
         // The the filename extension usually associated with an undecoded image of this type.
         virtual QString filenameExtension() const = 0;

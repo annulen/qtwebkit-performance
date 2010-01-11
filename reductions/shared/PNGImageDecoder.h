@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2006 Zack Rusin <zack@kde.org>
- *
- * All rights reserved.
+ * Copyright (C) 2006 Apple Computer, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -22,32 +20,49 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#include "IntRect.h"
+#ifndef PNGImageDecoder_h
+#define PNGImageDecoder_h
 
-#include <QRect>
+#include "ImageDecoder.h"
 
 namespace WebCore {
 
-IntRect::IntRect(const QRect& r)
-    : m_location(r.topLeft())
-    , m_size(r.width(), r.height())
-{
-}
+    class PNGImageReader;
 
-IntRect::operator QRect() const
-{
-    return QRect(x(), y(), width(), height());
-}
+    // This class decodes the PNG image format.
+    class PNGImageDecoder : public ImageDecoder {
+    public:
+        PNGImageDecoder();
+        ~PNGImageDecoder();
 
-bool IntRect::contains(const IntRect& other) const
-{
-    return x() <= other.x() && right() >= other.right()
-        && y() <= other.y() && bottom() >= other.bottom();
-}
+        virtual QString filenameExtension() const { return "png"; }
 
-}
+        // Take the data and store it.
+        virtual void setData(QByteArray* data, bool allDataReceived);
 
-// vim: ts=4 sw=4 et
+        // Whether or not the size information has been decoded yet.
+        virtual bool isSizeAvailable();
+
+        virtual RGBA32Buffer* frameBufferAtIndex(size_t index);
+
+        void decode(bool sizeOnly = false);
+
+        PNGImageReader* reader() { return m_reader; }
+
+        // Callbacks from libpng
+        void decodingFailed();
+        void headerAvailable();
+        void rowAvailable(unsigned char* rowBuffer, unsigned rowIndex, int interlacePass);
+        void pngComplete();
+
+    private:
+        PNGImageReader* m_reader;
+        QByteArray* m_data;
+    };
+
+} // namespace WebCore
+
+#endif
