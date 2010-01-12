@@ -77,12 +77,18 @@ tst_Scrolling::~tst_Scrolling()
 void tst_Scrolling::init()
 {
     m_view = new QWebView;
-    m_view->show();
+    const QSize viewportSize(1024, 768);
     m_page = m_view->page();
+    m_page->setPreferredContentsSize(viewportSize);
 
-    QSize viewportSize(1024, 768);
-    m_view->setFixedSize(viewportSize);
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    m_view->showFullScreen();
+#else
     m_page->setViewportSize(viewportSize);
+    m_view->setFixedSize(viewportSize);
+    m_view->show();
+#endif
+    QTest::qWaitForWindowShown(m_view);
 }
 
 void tst_Scrolling::cleanup()
@@ -109,25 +115,30 @@ void tst_Scrolling::scroll()
     m_view->load(url);
     ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
 
+    // wait for Javascript's lazy loading of ressources
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN)
+    QTest::qWait(1500);
+#else
+    QTest::qWait(500);
+#endif
+
     /* force a layout */
     QWebFrame* mainFrame = m_page->mainFrame();
 
+    const int scrollIncrement = 30;
     WEB_BENCHMARK(url.toString()) {
         mainFrame->setScrollPosition(QPoint(0, 0));
         m_view->update();
 
-        int offset = 0;
         do {
-            mainFrame->scroll(0, 1);
-            ++offset;
+            mainFrame->scroll(0, scrollIncrement);
             qApp->processEvents();
-        } while(offset + m_page->viewportSize().height() < mainFrame->contentsSize().height());
+        } while(mainFrame->scrollBarValue(Qt::Vertical) < mainFrame->scrollBarMaximum(Qt::Vertical));
 
         do {
-            mainFrame->scroll(0, -1);
-            --offset;
+            mainFrame->scroll(0, -scrollIncrement);
             qApp->processEvents();
-        } while(offset >= 0);
+        } while(mainFrame->scrollBarValue(Qt::Vertical) > 0);
     }
 }
 
