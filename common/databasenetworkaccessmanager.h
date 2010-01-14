@@ -9,7 +9,7 @@
 class DatabaseNetworkAccessManager : public QNetworkAccessManager
 {
 protected:
-    QNetworkReply* createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = 0) {
+    QNetworkReply* createRequest(Operation op, const QNetworkRequest& req, QIODevice* outgoingData = 0) {
         Q_UNUSED(outgoingData);
         DatabaseNetworkReply* reply = 0;
         if (op != GetOperation)
@@ -23,7 +23,7 @@ protected:
     }
 };
 
-bool connectToDatabase(const QString &name)
+bool connectToDatabase(const QString& name)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(name);
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) \
             ++i; \
             if (i < argumentsCount) { \
                 if (!connectToDatabase(arguments.at(i))) {\
-                    qWarning() << "the database " << arguments.at(i) << " cannot be openned."; \
+                    qWarning() << "the database " << arguments.at(i) << " cannot be opened."; \
                     return -1; \
                 } \
             } else { \
