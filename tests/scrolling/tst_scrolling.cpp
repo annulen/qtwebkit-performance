@@ -21,6 +21,7 @@
 
 #include "common_init.h"
 #include "benchmark.h"
+#include "databasenetworkaccessmanager.h"
 
 #include <qwebframe.h>
 #include <qwebview.h>
@@ -57,6 +58,7 @@ public:
     ~tst_Scrolling();
 
 public Q_SLOTS:
+    void initTestCase();
     void init();
     void cleanup();
 
@@ -67,11 +69,20 @@ private Q_SLOTS:
 private:
     QWebView* m_view;
     QWebPage* m_page;
+    QNetworkAccessManager* m_networkAccessManager;
 };
 
 tst_Scrolling::~tst_Scrolling()
 {
     benchmarkOutput(*benchmark_parent);
+}
+
+void tst_Scrolling::initTestCase()
+{
+    if (QSqlDatabase::database().isValid())
+        m_networkAccessManager = new DatabaseNetworkAccessManager;
+    else
+        m_networkAccessManager = 0;
 }
 
 void tst_Scrolling::init()
@@ -80,6 +91,8 @@ void tst_Scrolling::init()
     const QSize viewportSize(1024, 768);
     m_page = m_view->page();
     m_page->setPreferredContentsSize(viewportSize);
+    if (m_networkAccessManager)
+        m_page->setNetworkAccessManager(m_networkAccessManager);
 
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
     m_view->showFullScreen();
@@ -142,5 +155,5 @@ void tst_Scrolling::scroll()
     }
 }
 
-QTEST_MAIN(tst_Scrolling)
+DBWEBTEST_MAIN(tst_Scrolling)
 #include "tst_scrolling.moc"
