@@ -25,6 +25,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Perfom load test of the javascript parser of webkit.  The test will
+// attempt to parse a -huge- set of javascript fragments.  The data
+// should be located in the file "data.txt".  All the fragments are
+// separated by lines "NEW FRAGMENT".
+//
+// One way to automatically extract data from any web site is to
+// modify the code of webkit, in the file
+// "./JavaScriptCore/parser/Parser.cpp" before the call to jscyyparse,
+// add a command to print the source in the provider variable to the
+// standard output, preceded by a line "NEW FRAGMENT".
+
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QApplication>
