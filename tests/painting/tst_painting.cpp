@@ -21,7 +21,10 @@
 
 #include "common_init.h"
 #include "benchmark.h"
+#include "databasenetworkaccessmanager.h"
 
+#include <qapplication.h>
+#include <qdesktopwidget.h>
 #include <qwebframe.h>
 #include <qwebview.h>
 #include <qpainter.h>
@@ -57,8 +60,19 @@ void tst_Painting::init()
     m_page = m_view->page();
 
     QSize viewportSize(1024, 768);
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    // screensize is a more typical rendering unit for embedded
+    m_page->setPreferredContentsSize(viewportSize);
+    const QSize screenSize = QApplication::desktop()->geometry().size();
+    m_view->setFixedSize(screenSize);
+    m_page->setViewportSize(screenSize);
+#else
     m_view->setFixedSize(viewportSize);
     m_page->setViewportSize(viewportSize);
+#endif
+
+    if (QSqlDatabase::database().isValid())
+        m_page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
 }
 
 void tst_Painting::cleanup()
@@ -88,12 +102,14 @@ void tst_Painting::paint()
         mainFrame->render(&painter, QRect(QPoint(0, 0), m_page->viewportSize()));
         painter.end();
 
+#if defined(Q_WS_X11)
         // force badness... to have some reliable result on non raster..
         // this will make the result "unreal" in some ways but might be
         // better than just using the raster engine.
         QApplication::syncX();
+#endif
     }
 }
 
-QTEST_MAIN(tst_Painting)
+DBWEBTEST_MAIN(tst_Painting)
 #include "tst_painting.moc"
