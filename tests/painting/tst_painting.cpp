@@ -102,6 +102,9 @@ void tst_Painting::paint()
     mainFrame->toPlainText();
 
     QPixmap pixmap(m_page->viewportSize());
+#if defined(Q_WS_X11)
+    const bool needToSync = pixmap.paintEngine()->type() != QPaintEngine::Raster;
+#endif
     WEB_BENCHMARK(url.toString()) {
         QPainter painter(&pixmap);
         mainFrame->render(&painter, QRect(QPoint(0, 0), m_page->viewportSize()));
@@ -111,7 +114,8 @@ void tst_Painting::paint()
         // force badness... to have some reliable result on non raster..
         // this will make the result "unreal" in some ways but might be
         // better than just using the raster engine.
-        QApplication::syncX();
+        if (needToSync)
+            QApplication::syncX();
 #endif
     }
 }
