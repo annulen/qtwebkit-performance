@@ -21,6 +21,7 @@
 
 #include "common_init.h"
 #include "benchmark.h"
+#include "databasenetworkaccessmanager.h"
 
 #include <qwebframe.h>
 #include <qwebview.h>
@@ -58,8 +59,18 @@ void tst_Loading::init()
     m_page = m_view->page();
 
     QSize viewportSize(1024, 768);
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    m_page->setPreferredContentsSize(viewportSize);
+    const QSize screenSize = QApplication::desktop()->geometry().size();
+    m_view->setFixedSize(screenSize);
+    m_page->setViewportSize(screenSize);
+#else
     m_view->setFixedSize(viewportSize);
     m_page->setViewportSize(viewportSize);
+#endif
+
+    if (QSqlDatabase::database().isValid())
+        m_page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
 }
 
 void tst_Loading::cleanup()
@@ -95,5 +106,5 @@ void tst_Loading::load()
     }
 }
 
-QTEST_MAIN(tst_Loading)
+DBWEBTEST_MAIN(tst_Loading)
 #include "tst_loading.moc"
