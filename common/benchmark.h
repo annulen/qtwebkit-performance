@@ -75,6 +75,23 @@ private:
     bool m_timed;
 };
 
+// used to measure sub-sections of the code which is run multiple time
+class SubSectionBenchmarkController {
+public:
+    SubSectionBenchmarkController(const QString& name, Benchmark *parent, int iterations = 11);
+    ~SubSectionBenchmarkController();
+    void next();
+    void startSubMeasure();
+    void stopSubMeasure();
+    int iterations() const { return m_iterations; }
+
+    int i;
+private:
+    const int m_iterations;
+    Benchmark m_benchmark;
+    Benchmark* m_parent;
+};
+
 struct SummaryResult {
     SummaryResult()
         : mean(0)
@@ -122,5 +139,9 @@ extern Benchmark* benchmark_parent;
 
 #define TIME_NOW \
         web__controller.timeNow();
+
+#define WEB_BENCHMARK_SUBSECTION(name) \
+    for (SubSectionBenchmarkController web__controller(name, benchmark_parent); \
+         web__controller.i < web__controller.iterations(); web__controller.next())
 
 #endif

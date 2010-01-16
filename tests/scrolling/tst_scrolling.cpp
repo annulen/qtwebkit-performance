@@ -22,6 +22,7 @@
 #include "common_init.h"
 #include "benchmark.h"
 #include "databasenetworkaccessmanager.h"
+#include "paintingwebviewbench.h"
 
 #include <qwebframe.h>
 #include <qwebview.h>
@@ -65,6 +66,8 @@ public Q_SLOTS:
 private Q_SLOTS:
     void scroll_data();
     void scroll();
+    void paintingSpeed_data();
+    void paintingSpeed();
 
 private:
     QWebView* m_view;
@@ -152,6 +155,67 @@ void tst_Scrolling::scroll()
             mainFrame->scroll(0, -scrollIncrement);
             qApp->processEvents();
         } while(mainFrame->scrollBarValue(Qt::Vertical) > 0);
+    }
+}
+
+void tst_Scrolling::paintingSpeed_data()
+{
+    add_test_urls();
+}
+
+/*
+ * This benchmark measure the painting time of scrolling.
+ * The page is scrolled to the bottom, and then to the top. The
+ * total painting time is the value of interest.
+ */
+void tst_Scrolling::paintingSpeed()
+{
+    QFETCH(QUrl, url);
+
+    PaintingWebViewBench view;
+    const QSize viewportSize(1024, 768);
+    QWebPage* page = view.page();
+    page->setPreferredContentsSize(viewportSize);
+    if (m_networkAccessManager)
+        page->setNetworkAccessManager(m_networkAccessManager);
+
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    view.showFullScreen();
+#else
+    page->setViewportSize(viewportSize);
+    view.setFixedSize(viewportSize);
+    view.show();
+#endif
+    QTest::qWaitForWindowShown(&view);
+
+    view.load(url);
+    ::waitForSignal(&view, SIGNAL(loadFinished(bool)));
+
+    // wait for Javascript's lazy loading of ressources
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    QTest::qWait(1500);
+#else
+    QTest::qWait(500);
+#endif
+
+    QWebFrame* mainFrame = page->mainFrame();
+    if (mainFrame->scrollBarValue(Qt::Vertical) == mainFrame->scrollBarMaximum(Qt::Vertical)) {
+        QSKIP("No scrolling for this page", SkipSingle);
+    }
+
+    WEB_BENCHMARK_SUBSECTION(url.toString()) {
+        view.controller = &web__controller;
+        view.testing = true;
+        const int scrollIncrement = 30;
+        while (mainFrame->scrollBarValue(Qt::Vertical) < mainFrame->scrollBarMaximum(Qt::Vertical)) { // scroll forward
+            mainFrame->scroll(0, scrollIncrement);
+            waitForSignal(&view, SIGNAL(painted()));
+        }
+        QCoreApplication::processEvents();
+        while (mainFrame->scrollBarValue(Qt::Vertical) > 0) { // then backward
+            mainFrame->scroll(0, -scrollIncrement);
+            waitForSignal(&view, SIGNAL(painted()));
+        }
     }
 }
 

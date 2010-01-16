@@ -119,6 +119,39 @@ void BenchmarkController::timeNow()
     m_timed = true;
 }
 
+SubSectionBenchmarkController::SubSectionBenchmarkController(const QString& name, Benchmark* parent, int iterations)
+    : i(0)
+    , m_iterations(iterations)
+    , m_benchmark(name)
+    , m_parent(parent)
+{
+    sig_prof = 0;
+}
+
+SubSectionBenchmarkController::~SubSectionBenchmarkController()
+{
+    m_parent->addBenchmark(m_benchmark);
+}
+
+void SubSectionBenchmarkController::next()
+{
+    stopTimer();
+    if (i != 0)
+        m_benchmark.addResult(sig_prof);
+    ++i;
+    sig_prof = 0;
+}
+
+void SubSectionBenchmarkController::startSubMeasure()
+{
+    startTimer();
+}
+
+void SubSectionBenchmarkController::stopSubMeasure()
+{
+    stopTimer();
+}
+
 Benchmark::Benchmark()
     : m_empty(true)
 {}
