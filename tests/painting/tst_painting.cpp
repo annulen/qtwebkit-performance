@@ -25,8 +25,10 @@
 
 #include <qapplication.h>
 #include <qdesktopwidget.h>
+#include <qwebelement.h>
 #include <qwebframe.h>
 #include <qwebview.h>
+#include <qpaintengine.h>
 #include <qpainter.h>
 
 class tst_Painting : public QObject
@@ -43,6 +45,9 @@ public Q_SLOTS:
 private Q_SLOTS:
     void paint_data();
     void paint();
+
+    void fullPagePaint_data();
+    void fullPagePaint();
 
 private:
     QWebView* m_view;
@@ -107,6 +112,50 @@ void tst_Painting::paint()
         // this will make the result "unreal" in some ways but might be
         // better than just using the raster engine.
         QApplication::syncX();
+#endif
+    }
+}
+
+void tst_Painting::fullPagePaint_data()
+{
+    add_test_urls();
+}
+
+void tst_Painting::fullPagePaint()
+{
+    QFETCH(QUrl, url);
+
+    m_view->load(url);
+    ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
+
+    /* force a layout */
+    QWebFrame* mainFrame = m_page->mainFrame();
+    mainFrame->toPlainText();
+
+    QWebElement rootElement = mainFrame->documentElement();
+    QPixmap pixmap(rootElement.geometry().size());
+    if (pixmap.isNull())
+        QSKIP("Invalid pixmap", SkipSingle);
+
+    {
+        QPainter painter(&pixmap);
+        if (!painter.paintEngine() || !painter.paintEngine()->paintDevice())
+            QSKIP("Invalid engine for pixmap, probably short on memory", SkipSingle);
+    }
+#if defined(Q_WS_X11)
+    const bool needToSync = pixmap.paintEngine()->type() != QPaintEngine::Raster;
+#endif
+    WEB_BENCHMARK(url.toString()) {
+        QPainter painter(&pixmap);
+        rootElement.render(&painter);
+        painter.end();
+
+#if defined(Q_WS_X11)
+        // force badness... to have some reliable result on non raster..
+        // this will make the result "unreal" in some ways but might be
+        // better than just using the raster engine.
+        if (needToSync)
+            QApplication::syncX();
 #endif
     }
 }
