@@ -25,6 +25,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Perfom load test of the javascript parser of webkit.  The test will
+// attempt to parse a -huge- set of javascript fragments.  The data
+// should be located in the file "data.txt".  All the fragments are
+// separated by lines "NEW FRAGMENT".
+//
+// One way to automatically extract data from any web site is to
+// modify the code of webkit, in the file
+// "./JavaScriptCore/parser/Parser.cpp" before the call to jscyyparse,
+// add a command to print the source in the provider variable to the
+// standard output, preceded by a line "NEW FRAGMENT".
+
 #include <QtTest/QtTest>
 #include <QDebug>
 #include <QApplication>
@@ -52,6 +63,12 @@ public:
         Q_ASSERT(m_globalData->parser);
     }
 
+    ~Parser()
+    {
+       m_globalData->heap.destroy();
+       delete m_globalData;
+    }
+
     int parse(const QString& fragment)
     {
         // Set up the parsing context.  Hopefully this is fast
@@ -59,11 +76,11 @@ public:
         JSC::UString string((const UChar*)fragment.constData(), fragment.size());
         WTF::PassRefPtr<JSC::UStringSourceProvider> provider = JSC::UStringSourceProvider::create(string, "");
         JSC::SourceCode code(provider, 0);
-        JSC::ParserArena arena;
-        m_globalData->lexer->setCode(code, arena);
-
+        m_globalData->lexer->setCode(code, m_globalData->parser->arena());
         int parseError = jscyyparse(m_globalData);
+        // Free all the used memory.
         m_globalData->lexer->clear();
+        m_globalData->parser->arena().reset();
         return parseError;
     }
 
@@ -82,6 +99,7 @@ public:
 
 private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
     void testParsing();
 
 private:
@@ -103,10 +121,15 @@ void tst_JavaScriptParsing::initTestCase()
     fragments = all.split("\nNEW FRAGMENT\n");
 }
 
+void tst_JavaScriptParsing::cleanupTestCase()
+{
+    fragments.clear();
+}
+
 void tst_JavaScriptParsing::testParsing()
 {
     WEB_BENCHMARK("javascript-parsing") {
-        foreach(QString fragment, fragments) {
+        foreach(const QString& fragment, fragments) {
             parser.parse(fragment);
         }
     }
