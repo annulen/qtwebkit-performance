@@ -23,6 +23,7 @@
 #include "benchmark.h"
 #include "databasenetworkaccessmanager.h"
 
+#include <qdesktopwidget.h>
 #include <qwebframe.h>
 #include <qwebview.h>
 #include <qpainter.h>
@@ -39,6 +40,7 @@ public Q_SLOTS:
     void cleanup();
 
 private Q_SLOTS:
+    void load_data();
     void load();
 
 private:
@@ -78,30 +80,22 @@ void tst_Loading::cleanup()
     delete m_view;
 }
 
+void tst_Loading::load_data()
+{
+    add_test_urls();
+}
+
 void tst_Loading::load()
 {
-    const QList<QUrl> urls = test_urls();
+    QFETCH(QUrl, url);
 
-    // warmup
-    foreach(const QUrl& url, urls) {
+    WEB_BENCHMARK(url.toString()) {
         m_view->load(url);
         // really wait for loading..
         ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
-    }
-    m_view->load(QUrl("about:blank"));
-    QWebSettings::clearMemoryCaches();
-    ::waitForSignal(m_view, SIGNAL(loadFinished(bool)), 1000);
-
-    WEB_BENCHMARK("all_loads") {
-        foreach(const QUrl& url, urls) {
-            m_view->load(url);
-            // really wait for loading..
-            ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
-        }
 
         TIME_NOW
         m_view->load(QUrl("about:blank"));
-        ::waitForSignal(m_view, SIGNAL(loadFinished(bool)), 1000);
         QWebSettings::clearMemoryCaches();
     }
 }
