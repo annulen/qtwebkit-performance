@@ -126,20 +126,7 @@ double benchmarkStdDeviationBiased(const Benchmark&);
  * \return \p true if the requested signal was received
  *         \p false on timeout
  */
-static bool waitForSignal(QObject* obj, const char* signal, int timeout = 0)
-{
-    QEventLoop loop;
-    QObject::connect(obj, signal, &loop, SLOT(quit()));
-    QTimer timer;
-    QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
-    if (timeout > 0) {
-        QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
-        timer.setSingleShot(true);
-        timer.start(timeout);
-    }
-    loop.exec();
-    return timeoutSpy.isEmpty();
-}
+bool waitForSignal(QObject* obj, const char* signal, int timeout = 0);
 
 /*
  * Use shadowing

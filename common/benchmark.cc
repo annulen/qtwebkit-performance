@@ -269,4 +269,19 @@ double benchmarkStdDeviationBiased(const Benchmark& benchmark)
     return sqrt(variance);
 }
 
+bool waitForSignal(QObject* obj, const char* signal, int timeout)
+{
+    QEventLoop loop;
+    QObject::connect(obj, signal, &loop, SLOT(quit()));
+    QTimer timer;
+    QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
+    if (timeout > 0) {
+        QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+        timer.setSingleShot(true);
+        timer.start(timeout);
+    }
+    loop.exec();
+    return timeoutSpy.isEmpty();
+}
+
 Benchmark* benchmark_parent = new Benchmark("total");
