@@ -23,6 +23,7 @@
 #include "common_init.h"
 #include "databasenetworkaccessmanager.h"
 
+#include <qdesktopwidget.h>
 #include <qwebframe.h>
 #include <qwebview.h>
 #include <qpainter.h>
