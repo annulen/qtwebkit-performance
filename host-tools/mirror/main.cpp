@@ -28,10 +28,12 @@
 
 #include <QApplication>
 
+#include <QWebFrame>
 #include <QWebPage>
 #include <QWebView>
 #include <QWebSettings>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QTimer>
@@ -42,7 +44,9 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include "benchmark.h"
 #include "cookiejar.h"
+#include "urlfilereader.h"
 
 /**
  * A proxy for the QNetworkReply...
@@ -247,18 +251,42 @@ public:
         QNetworkReply* reply = QNetworkAccessManager::createRequest(op, request, outgoingData);
         return new NetworkReplyProxy(this, reply);
     }
+};
 
-public Q_SLOTS:
-    void allLoaded()
+class WebPage : public QWebPage {
+    Q_OBJECT
+public:
+    WebPage(QObject* parent)
+        : QWebPage(parent)
     {
-        qApp->processEvents();
-        QTimer::singleShot(6000, this, SLOT(reallyLeave()));
+        connect(this, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
     }
 
-    void reallyLeave()
+    void load(const QUrl &url, const QString &description)
     {
-        exit(0);
+        m_description = description;
+        mainFrame()->load(url);
     }
+
+private Q_SLOTS:
+    void pageLoaded(bool ok)
+    {
+        if (ok) {
+            QSqlQuery query;
+            query.prepare("INSERT INTO mirrored_urls(url, description, date) VALUES(:url, :description, :date)");
+            query.bindValue(":url", mainFrame()->requestedUrl());
+            query.bindValue(":description", m_description);
+            query.bindValue(":date", QDateTime::currentDateTime().toString(Qt::ISODate));
+            // verify that the old and new data re the same...
+            if (!query.exec())
+                qWarning() << "\tInsert into mirrored_urls failed with:" << query.lastError();
+        } else {
+            qWarning() << "Loading of " << mainFrame()->requestedUrl() << " failed!";
+        }
+    }
+
+private:
+    QString m_description;
 };
 
 
@@ -283,6 +311,10 @@ int main(int argc, char **argv)
                                                           "url blob NOT NULL UNIQUE,"
                                                           "data blob, header blob)"))
         qFatal("Creating the table failed...");
+    if (!query.exec("CREATE TABLE IF NOT EXISTS mirrored_urls(url blob NOT NULL UNIQUE,"
+                                                              "description text NULL,"
+                                                              "date text NULL)"))
+        qFatal("Creating the table failed...");
 
     CookieJar jar;
     QStringList args = app.arguments();
@@ -290,7 +322,8 @@ int main(int argc, char **argv)
     bool keepRunning = false;
     bool isVisible = false;
 
-    for (int i = 0; i < args.size(); ++i) {
+    QList<UrlInfo> urlList;
+    for (int i = 1; i < args.size(); ++i) {
         const QString& arg = args[i];
 
         if (arg == QLatin1String("-c") && i + 1< args.size()) {
@@ -300,38 +333,72 @@ int main(int argc, char **argv)
             keepRunning = true;
         } else if (arg == QLatin1String("-v")) {
             isVisible = true;
+        } else if (arg == QLatin1String("-urlfile") || arg == QLatin1String("-u")) {
+            ++i;
+            if (!(i < args.size()))
+                qFatal("-urlfile but no file specified");
+            QFile urlFile(args[i]);
+            if (!urlFile.open(QIODevice::ReadOnly)) {
+                qCritical() << "-urlfile but file " << args[i] << " cannot be read: " << urlFile.errorString();
+                return -1;
+            }
+            QList<UrlInfo> aUrlList = readUrlList(&urlFile);
+            urlList.append(aUrlList);
         } else if (arg == QLatin1String("-h") || arg == QLatin1String("--help")) {
-            fprintf(stderr, "%s options [url]\n", argv[0]);
+            fprintf(stderr, "%s options [-urlfile path_to_file] [url] [url2] [...]\n", argv[0]);
             fprintf(stderr, "\t-c cookies.ini\tUse the cookies from this file.\n"
                             "\t\t\tThe cookie file is compatible with Arora.\n");
             fprintf(stderr, "\t-v\t\tShow the WebView when running\n");
             fprintf(stderr, "\t-k\t\tKeep the application running.\n");
+            fprintf(stderr, "\t-urlfile\t\tMirror the url of the file.\n");
             return -1;
         } else {
-            url = arg;
+            urlList.append(UrlInfo(arg, QString()));
         }
     }
 
-    qWarning() << "Using url: " << url;
-
-
     QWebView* view = new QWebView;
-    QWebPage* page = new QWebPage(view);
-
+    WebPage* page = new WebPage(view);
+    page->setNetworkAccessManager(new NetworkAccessManagerProxy(&jar));
     view->setPage(page);
-    view->page()->setNetworkAccessManager(new NetworkAccessManagerProxy(&jar));
 
-    /* continue mode for the poor */
-    if (!keepRunning) {
-        QObject::connect(view, SIGNAL(loadFinished(bool)),
-                        view->page()->networkAccessManager(), SLOT(allLoaded()));
+    if (isVisible) {
+        view->show();
+        QCoreApplication::processEvents();
     }
 
-    view->load(url);
-    view->setVisible(isVisible);
+    QSet<QUrl> knownUrl;
+    QSqlQuery knownUrlSelect;
+    knownUrlSelect.prepare("SELECT url FROM mirrored_urls");
+    if (knownUrlSelect.exec()) {
+        while (knownUrlSelect.next())
+            knownUrl.insert(knownUrlSelect.value(0).toUrl());
+    }
 
+    foreach (const UrlInfo &urlUnit, urlList) {
+        if (knownUrl.contains(urlUnit.first))
+            continue;
+        qWarning() << "Using url: " << urlUnit.first;
+        page->load(urlUnit.first, urlUnit.second);
+        ::waitForSignal(page, SIGNAL(loadFinished(bool)), /* ten second timeout */ 10000);
 
-    return app.exec();
+        QEventLoop loop;
+        QTimer timer;
+        QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+        timer.setSingleShot(true);
+        timer.start(6000);
+        loop.exec();
+    }
+
+    /* continue mode for the poor */
+    if (keepRunning)
+        return app.exec();
+    return 0;
+}
+
+quint64 qHash(const QUrl &url)
+{
+    return qHash(url.toString());
 }
 
 #include "main.moc"
