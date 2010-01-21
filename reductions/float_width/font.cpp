@@ -61,8 +61,8 @@ float floatWidth_fasta(const QFont& font, const QString& text, bool isRtl, int p
     if (!text.length())
         return 0;
 
-    if (text.length() == 1 && wordSpacing == 0 && treatAsSpace(text[0]))
-        return QFontMetrics(font).width(text[0]);
+    if (text.length() == 1 && treatAsSpace(text[0]))
+        return QFontMetrics(font).width(text[0]) - wordSpacing + padding;
 
     QTextLayout layout(text, font);
     QTextLine line = setupLayout(&layout, isRtl, padding);
