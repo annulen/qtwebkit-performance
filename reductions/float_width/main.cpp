@@ -127,7 +127,7 @@ void tst_FloatWidth::floatWidth_western()
             QFont font = fonts.at(text.font_id - 1);
             font.setWordSpacing(text.wordSpacing);
             font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
-            floatWidth(font, text.string, text.is_rtl, text.padding);
+            floatWidth(font, text.string, text.is_rtl, text.padding, text.wordSpacing);
         }
     }
 }

@@ -23,5 +23,5 @@
 #include <QFont>
 #include <QString>
 
-float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding);
+float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding, int wordSpace);
 #endif

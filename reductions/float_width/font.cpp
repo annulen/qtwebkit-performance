@@ -24,6 +24,7 @@
 #include <QTextLine>
 
 // See WebCore/platform/graphics/qt/FontQt.cpp for the origin of the code
+static bool treatAsSpace(QChar c) { return c == ' ' || c == '\t' || c == '\n' || c == 0x00A0; }
 static QTextLine setupLayout(QTextLayout* layout, bool isRtl, int padding)
 {
     int flags = isRtl ? Qt::TextForceRightToLeft : Qt::TextForceLeftToRight;
@@ -39,7 +40,7 @@ static QTextLine setupLayout(QTextLayout* layout, bool isRtl, int padding)
     return line;
 }
 
-float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding)
+float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding, int wordSpacing)
 {
     if (!text.length())
         return 0;
@@ -48,10 +49,8 @@ float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding
     QTextLine line = setupLayout(&layout, isRtl, padding);
     int w = int(line.naturalTextWidth());
     // WebKit expects us to ignore word spacing on the first character (as opposed to what Qt does)
-#if 0 // <- always zero here... :}
     if (treatAsSpace(text[0]))
-        w -= m_wordSpacing;
-#endif
+        w -= wordSpacing;
 
     return w + padding;
 }
