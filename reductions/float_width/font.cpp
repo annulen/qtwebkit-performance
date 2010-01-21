@@ -21,6 +21,7 @@
 
 #include <limits.h>
 
+#include <QFontMetrics>
 #include <QTextLine>
 
 // See WebCore/platform/graphics/qt/FontQt.cpp for the origin of the code
@@ -44,6 +45,24 @@ float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding
 {
     if (!text.length())
         return 0;
+
+    QTextLayout layout(text, font);
+    QTextLine line = setupLayout(&layout, isRtl, padding);
+    int w = int(line.naturalTextWidth());
+    // WebKit expects us to ignore word spacing on the first character (as opposed to what Qt does)
+    if (treatAsSpace(text[0]))
+        w -= wordSpacing;
+
+    return w + padding;
+}
+
+float floatWidth_fasta(const QFont& font, const QString& text, bool isRtl, int padding, int wordSpacing)
+{
+    if (!text.length())
+        return 0;
+
+    if (text.length() == 1 && wordSpacing == 0 && treatAsSpace(text[0]))
+        return QFontMetrics(font).width(text[0]);
 
     QTextLayout layout(text, font);
     QTextLine line = setupLayout(&layout, isRtl, padding);

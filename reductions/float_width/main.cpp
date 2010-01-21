@@ -80,6 +80,8 @@ public:
 
 private Q_SLOTS:
     void floatWidth_western();
+    void floatWidth_western_fasta();
+    void floatWidth_western_compare();
 //    void floatWidth_korean();
 //    void floatWidth_japanese();
 };
@@ -129,6 +131,39 @@ void tst_FloatWidth::floatWidth_western()
             font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
             floatWidth(font, text.string, text.is_rtl, text.padding, text.wordSpacing);
         }
+    }
+}
+
+void tst_FloatWidth::floatWidth_western_fasta()
+{
+    QVector<QFont> fonts;
+    QList<Text> data;
+    loadData("text_data_western", fonts, data);
+    qWarning("Loaded: %d fonts and %d text snippets", fonts.size(), data.size());
+
+    WEB_BENCHMARK("floatWidth_western_fasta") {
+        foreach(const Text& text, data) {
+            QFont font = fonts.at(text.font_id - 1);
+            font.setWordSpacing(text.wordSpacing);
+            font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
+            floatWidth_fasta(font, text.string, text.is_rtl, text.padding, text.wordSpacing);
+        }
+    }
+}
+
+void tst_FloatWidth::floatWidth_western_compare()
+{
+    QVector<QFont> fonts;
+    QList<Text> data;
+    loadData("text_data_western", fonts, data);
+    qWarning("Loaded: %d fonts and %d text snippets", fonts.size(), data.size());
+
+    foreach(const Text& text, data) {
+        QFont font = fonts.at(text.font_id - 1);
+        font.setWordSpacing(text.wordSpacing);
+        font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
+        QCOMPARE(floatWidth_fasta(font, text.string, text.is_rtl, text.padding, text.wordSpacing),
+                 floatWidth(font, text.string, text.is_rtl, text.padding, text.wordSpacing));
     }
 }
 

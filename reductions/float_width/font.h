@@ -24,4 +24,5 @@
 #include <QString>
 
 float floatWidth(const QFont& font, const QString& text, bool isRtl, int padding, int wordSpace);
+float floatWidth_fasta(const QFont& font, const QString& text, bool isRtl, int padding, int wordSpace);
 #endif
