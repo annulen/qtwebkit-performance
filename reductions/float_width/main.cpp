@@ -76,6 +76,7 @@ QDataStream& operator>>(QDataStream& stream, Font& font)
 class tst_FloatWidth : public QObject {
     Q_OBJECT
 public:
+    tst_FloatWidth();
     ~tst_FloatWidth();
 
 private Q_SLOTS:
@@ -84,6 +85,10 @@ private Q_SLOTS:
     void floatWidth_western_compare();
 //    void floatWidth_korean();
 //    void floatWidth_japanese();
+
+private:
+    QVector<QFont> western_fonts;
+    QList<Text> western_data;
 };
 
 tst_FloatWidth::~tst_FloatWidth()
@@ -117,16 +122,17 @@ static void loadData(const QString& fileName, QVector<QFont>& fonts, QList<Text>
     }
 }
 
+tst_FloatWidth::tst_FloatWidth()
+{
+    loadData("text_data_western", western_fonts, western_data);
+    qWarning("Loaded: %d fonts and %d text snippets", western_fonts.size(), western_data.size());
+}
+
 void tst_FloatWidth::floatWidth_western()
 {
-    QVector<QFont> fonts;
-    QList<Text> data;
-    loadData("text_data_western", fonts, data);
-    qWarning("Loaded: %d fonts and %d text snippets", fonts.size(), data.size());
-
     WEB_BENCHMARK("floatWidth_western") {
-        foreach(const Text& text, data) {
-            QFont font = fonts.at(text.font_id - 1);
+        foreach(const Text& text, western_data) {
+            QFont font = western_fonts.at(text.font_id - 1);
             font.setWordSpacing(text.wordSpacing);
             font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
             floatWidth(font, text.string, text.is_rtl, text.padding, text.wordSpacing);
@@ -136,14 +142,9 @@ void tst_FloatWidth::floatWidth_western()
 
 void tst_FloatWidth::floatWidth_western_fasta()
 {
-    QVector<QFont> fonts;
-    QList<Text> data;
-    loadData("text_data_western", fonts, data);
-    qWarning("Loaded: %d fonts and %d text snippets", fonts.size(), data.size());
-
     WEB_BENCHMARK("floatWidth_western_fasta") {
-        foreach(const Text& text, data) {
-            QFont font = fonts.at(text.font_id - 1);
+        foreach(const Text& text, western_data) {
+            QFont font = western_fonts.at(text.font_id - 1);
             font.setWordSpacing(text.wordSpacing);
             font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
             floatWidth_fasta(font, text.string, text.is_rtl, text.padding, text.wordSpacing);
@@ -153,13 +154,8 @@ void tst_FloatWidth::floatWidth_western_fasta()
 
 void tst_FloatWidth::floatWidth_western_compare()
 {
-    QVector<QFont> fonts;
-    QList<Text> data;
-    loadData("text_data_western", fonts, data);
-    qWarning("Loaded: %d fonts and %d text snippets", fonts.size(), data.size());
-
-    foreach(const Text& text, data) {
-        QFont font = fonts.at(text.font_id - 1);
+    foreach(const Text& text, western_data) {
+        QFont font = western_fonts.at(text.font_id - 1);
         font.setWordSpacing(text.wordSpacing);
         font.setLetterSpacing(QFont::AbsoluteSpacing, text.letterSpacing);
         QCOMPARE(floatWidth_fasta(font, text.string, text.is_rtl, text.padding, text.wordSpacing),
