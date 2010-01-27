@@ -29,10 +29,23 @@ def header_content_length(old_header, new_length):
 
     old_length = old_header[start + length:end]
     if int(old_length) == new_length:
-        return None
+        return old_header
     new_entry = "content-length: %d" % new_length
     return old_header.replace(old_header[start:end], new_entry, 1)
 
+def header_connection_close(old_header):
+    """
+    Remove the Connection: Something from the line
+    """
+    length = len("connection: ")
+
+    start = old_header.lower().find("connection: ")
+    if start < 0:
+        return old_header
+    end = old_header.find("\n", start)
+
+
+    return "%s%s" % (old_header[0:start], old_header[end + 1:])
 
 def update_header():
     cur = connection.execute("SELECT url, header, LENGTH(data) from responses")
@@ -40,7 +53,9 @@ def update_header():
         old_header = str(row[1])
 
         new_header = header_content_length(old_header, to_num(row[2]))
-        if not new_header:
+        new_header = header_connection_close(new_header)
+
+        if old_header == new_header:
             continue
 
         connection.execute("UPDATE responses SET header = ? WHERE url like ?", [new_header, row[0]])
