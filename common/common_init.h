@@ -28,65 +28,16 @@
 #ifndef common_init_h
 #define common_init_h
 
-/**
- * routines to add test data...
- *
- * Created from do_mirror.sh with the following shell foo:
- *  for site in $WEBSITES; do echo 'QTest::newRow("rowXY") <<' QUrl(\"$site\"\);; done
- */
-QList<QUrl> test_urls()
-{
-    QList<QUrl> urls;
-    urls << QUrl("http://us.yahoo.com");
-    urls << QUrl("http://www.google.com/ncr");
-    urls << QUrl("http://maps.google.com");
-    urls << QUrl("http://www.apple.com");
-    urls << QUrl("http://amazon.com");
-    urls << QUrl("http://ebay.com");
-    urls << QUrl("http://bbc.co.uk");
-    urls << QUrl("http://www.guardian.co.uk");
-    urls << QUrl("http://www.google.com/news?ned=us");
-    urls << QUrl("http://news.yahoo.com");
-    urls << QUrl("http://flickr.com");
-    urls << QUrl("http://www.youtube.com/?hl=en_US");
-    urls << QUrl("http://myspace.com");
-    urls << QUrl("http://www.twitter.com");
-    urls << QUrl("http://twitter.com/BARACKOBAMA");
-    urls << QUrl("http://reddit.com");
-    urls << QUrl("http://www.facebook.com");
-    urls << QUrl("http://www.gmail.com");
-    urls << QUrl("http://mail.yahoo.com");
-    urls << QUrl("http://hi5.com");
-    urls << QUrl("http://www.dailymotion.com");
-    urls << QUrl("http://youporn.com");
-    urls << QUrl("http://www.microsoft.com/en/us/default.aspx");
-    urls << QUrl("http://www.live.com");
-    urls << QUrl("http://www.wikipedia.org");
-    urls << QUrl("http://en.wikipedia.org");
-    urls << QUrl("http://www.wordpress.com");
-    urls << QUrl("http://www.rapidshare.com");
-    urls << QUrl("http://www.blogger.com");
-    urls << QUrl("http://www.bing.com");
-    urls << QUrl("http://www.imdb.com");
-    urls << QUrl("http://www.linkedin.com");
-    urls << QUrl("http://en.wikipedia.org/wiki/Maxwell_equations");
-    urls << QUrl("http://naver.com");
-    urls << QUrl("http://kr.yahoo.com");
-    urls << QUrl("http://www.google.co.kr/");
-    urls << QUrl("http://www.auction.co.kr");
-    urls << QUrl("http://www.youtube.com/?hl=ko-KR");
+#include <QList>
+#include <QUrl>
+#include <QTest>
 
-    return urls;
-}
+static QList<QUrl> globalUrlList;
 
-void add_test_urls()
-{
-    QList<QUrl> row = test_urls();
-    QTest::addColumn<QUrl>("url");
+void add_url_to_test_urls(const QUrl &url);
 
-    for (int i = 0; i < row.count(); ++i)
-        QTest::newRow(QString("row%1").arg(i+1).toLatin1()) << row[i];
+QList<QUrl> test_urls();
 
-}
+void add_test_urls();
 
 #endif

@@ -4,6 +4,7 @@
 #include <QNetworkReply>
 #include <QByteArray>
 #include <QBuffer>
+#include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QTimer>
