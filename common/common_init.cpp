@@ -1,5 +1,7 @@
 #include "common_init.h"
 
+#include <QTest>
+
 void add_url_to_test_urls(const QUrl &url) {
     globalUrlList << url;
 }

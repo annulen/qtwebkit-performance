@@ -22,6 +22,7 @@
 #include "common_init.h"
 #include "benchmark.h"
 #include "databasenetworkaccessmanager.h"
+#include "databasetests.h"
 
 #include <qdesktopwidget.h>
 #include <qwebframe.h>

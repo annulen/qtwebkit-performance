@@ -22,6 +22,7 @@
 #include "common_init.h"
 #include "benchmark.h"
 #include "databasenetworkaccessmanager.h"
+#include "databasetests.h"
 #include "paintingwebviewbench.h"
 
 #include <qwebframe.h>

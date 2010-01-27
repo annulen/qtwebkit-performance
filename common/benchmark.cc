@@ -28,6 +28,8 @@
 #include "benchmark.h"
 
 #include <QDebug>
+#include <QEventLoop>
+#include <QSignalSpy>
 #include <math.h>
 #include <signal.h>
 

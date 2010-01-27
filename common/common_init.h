@@ -30,7 +30,6 @@
 
 #include <QList>
 #include <QUrl>
-#include <QTest>
 
 static QList<QUrl> globalUrlList;
 

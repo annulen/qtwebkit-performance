@@ -28,9 +28,7 @@
 #ifndef benchmark_h
 #define benchmark_h
 
-#include <QEventLoop>
 #include <QPair>
-#include <QSignalSpy>
 #include <QString>
 #include <QTimer>
 
