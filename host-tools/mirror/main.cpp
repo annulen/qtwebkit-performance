@@ -329,6 +329,7 @@ int main(int argc, char **argv)
         if (arg == QLatin1String("-c") && i + 1< args.size()) {
             bool loaded = jar.load(args.at(i + 1));
             qWarning("Loading jar from: %s %d", qPrintable(args.at(i + 1)), loaded);
+            ++i;
         } else if (arg == QLatin1String("-k")) {
             keepRunning = true;
         } else if (arg == QLatin1String("-v")) {
