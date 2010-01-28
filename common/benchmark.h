@@ -59,7 +59,7 @@ private:
 
 class BenchmarkController {
 public:
-    BenchmarkController(const QString& name, Benchmark *parent, int iterations = 11);
+    BenchmarkController(const QString& name, Benchmark *parent, int iterations = defaultIterations);
     ~BenchmarkController();
 
     void next();
@@ -67,6 +67,9 @@ public:
     int iterations() const;
 
     int i;
+
+    static void setDefaultIterations(int i) { defaultIterations = i; }
+    static int defaultIterations;
 
 private:
     long long timeElapsed() const;

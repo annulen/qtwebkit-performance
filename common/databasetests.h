@@ -58,6 +58,17 @@ QStringList mainImpl()
                 qFatal("-database is defined but no database file specified");
             }
             continue;
+        } else if (arguments.at(i) == QLatin1String("-iterations")) {
+            ++i;
+            if (i < argumentsCount) {
+                bool success;
+                int iterations = arguments.at(i).toInt(&success);
+                if (success)
+                    BenchmarkController::setDefaultIterations(iterations + 1);  // + 1 for the warmup
+                else
+                    qWarning() << "-iterations expect a number argument. Default iterations will be used.";
+            }
+            continue;
         }
         ouputArguments.append(arguments.at(i));
     }

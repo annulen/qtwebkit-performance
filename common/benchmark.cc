@@ -73,6 +73,8 @@ static void __attribute__((constructor)) benchmark_init()
 
 }
 
+int BenchmarkController::defaultIterations = 11;
+
 BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent, int iterations)
     : i(0)
     , m_iterations(iterations)
