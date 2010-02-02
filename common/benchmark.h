@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Holger Hans Peter Freyther
+ * Copyright (C) 2010 Balazs Kelemen, University of Szeged
  *
  * All rights reserved.
  *

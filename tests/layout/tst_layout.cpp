@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 Holger Hans Peter Freyther
+ * Copyright (C) 2010 Balazs Kelemen, University of Szeged
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -79,13 +80,6 @@ void tst_Layout::init()
 
     if (QSqlDatabase::database().isValid())
         m_page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
-
-#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
-    m_view->showFullScreen();
-#else
-    m_view->show();
-#endif
-    QTest::qWaitForWindowShown(m_view);
 }
 
 void tst_Layout::cleanup()
