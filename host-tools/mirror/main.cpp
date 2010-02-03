@@ -28,10 +28,10 @@
 
 #include <QApplication>
 
-#include <QWebFrame>
-#include <QWebPage>
-#include <QWebView>
-#include <QWebSettings>
+#include <qwebframe.h>
+#include <qwebpage.h>
+#include <qwebview.h>
+#include <qwebsettings.h>
 
 #include <QDateTime>
 #include <QDebug>
