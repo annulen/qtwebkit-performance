@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Holger Hans Peter Freyther
+ * Copyright (C) 2010 Benjamin Poulain, Nokia
  *
  * All rights reserved.
  *
