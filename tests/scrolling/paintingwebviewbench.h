@@ -3,7 +3,7 @@
 
 #include "benchmark.h"
 
-#include <QWebView>
+#include <qwebview.h>
 #include <QTest>
 
 class PaintingWebViewBench : public QWebView

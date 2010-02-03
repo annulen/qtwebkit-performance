@@ -1,6 +1,6 @@
 #include <QApplication>
-#include <QWebPage>
-#include <QWebView>
+#include <qwebpage.h>
+#include <qwebview.h>
 
 #include <QDebug>
 

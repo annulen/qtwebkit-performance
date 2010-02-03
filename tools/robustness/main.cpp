@@ -30,10 +30,10 @@
 #include <QBasicTimer>
 #include <QDebug>
 
-#include <QWebElement>
-#include <QWebFrame>
-#include <QWebView>
-#include <QWebPage>
+#include <qwebelement.h>
+#include <qwebframe.h>
+#include <qwebview.h>
+#include <qwebpage.h>
 
 class WebPage : public QWebPage
 {
