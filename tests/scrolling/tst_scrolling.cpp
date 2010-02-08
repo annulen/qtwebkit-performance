@@ -25,6 +25,7 @@
 #include "databasenetworkaccessmanager.h"
 #include "databasetests.h"
 #include "paintingwebviewbench.h"
+#include "webpage.h"
 
 #include <qwebframe.h>
 #include <qwebview.h>
@@ -50,7 +51,7 @@ private Q_SLOTS:
 
 private:
     QWebView* m_view;
-    QWebPage* m_page;
+    WebPage* m_page;
     QNetworkAccessManager* m_networkAccessManager;
 };
 
@@ -71,7 +72,8 @@ void tst_Scrolling::init()
 {
     m_view = new QWebView;
     const QSize viewportSize(1024, 768);
-    m_page = m_view->page();
+    m_page = new WebPage(this);
+    m_view->setPage(m_page);
     m_page->setPreferredContentsSize(viewportSize);
     if (m_networkAccessManager)
         m_page->setNetworkAccessManager(m_networkAccessManager);

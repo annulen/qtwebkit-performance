@@ -12,5 +12,6 @@ target.path += $$INSTALL_DIR/qtwebkit-benchmark
 INSTALLS += target
 SOURCES += ../../common/common_init.cpp \
     ../../common/benchmark.cc \
-    ../../common/databasenetworkaccessmanager.cpp
-HEADERS += common/databasetests.h
+    ../../common/databasenetworkaccessmanager.cpp \
+    ../../common/webpage.cpp
+HEADERS += ../../common/webpage.h

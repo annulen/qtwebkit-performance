@@ -23,6 +23,7 @@
 #include "benchmark.h"
 #include "databasenetworkaccessmanager.h"
 #include "databasetests.h"
+#include "webpage.h"
 
 #include <qdesktopwidget.h>
 #include <qwebframe.h>
@@ -46,7 +47,7 @@ private Q_SLOTS:
 
 private:
     QWebView* m_view;
-    QWebPage* m_page;
+    WebPage* m_page;
 };
 
 tst_Loading::~tst_Loading()
@@ -59,7 +60,8 @@ void tst_Loading::init()
     QWebSettings::globalSettings()->setMaximumPagesInCache(0);
     QWebSettings::globalSettings()->setObjectCacheCapacities(0, 0, 0);
     m_view = new QWebView;
-    m_page = m_view->page();
+    m_page = new WebPage(m_view);
+    m_view->setPage(m_page);
 
     QSize viewportSize(1024, 768);
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
