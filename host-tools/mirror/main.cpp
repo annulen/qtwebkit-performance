@@ -253,10 +253,10 @@ public:
     }
 };
 
-class WebPage : public QWebPage {
+class MirroringWebPage : public QWebPage {
     Q_OBJECT
 public:
-    WebPage(QObject* parent)
+    MirroringWebPage(QObject* parent)
         : QWebPage(parent)
     {
         connect(this, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
@@ -359,7 +359,7 @@ int main(int argc, char **argv)
     }
 
     QWebView* view = new QWebView;
-    WebPage* page = new WebPage(view);
+    MirroringWebPage* page = new MirroringWebPage(view);
     page->setNetworkAccessManager(new NetworkAccessManagerProxy(&jar));
     view->setPage(page);
 
