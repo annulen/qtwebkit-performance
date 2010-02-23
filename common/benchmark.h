@@ -95,6 +95,8 @@ private:
     const int m_iterations;
     Benchmark m_benchmark;
     Benchmark* m_parent;
+    bool m_running;
+    unsigned int m_iterationTime;
 };
 
 struct SummaryResult {

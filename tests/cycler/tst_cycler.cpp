@@ -30,12 +30,12 @@
 #include <qwebview.h>
 #include <qpainter.h>
 
-class tst_Loading : public QObject
+class tst_Cycler : public QObject
 {
     Q_OBJECT
 
 public:
-    ~tst_Loading();
+    ~tst_Cycler();
 
 public Q_SLOTS:
     void init();
@@ -50,12 +50,12 @@ private:
     WebPage* m_page;
 };
 
-tst_Loading::~tst_Loading()
+tst_Cycler::~tst_Cycler()
 {
     benchmarkOutput(*benchmark_parent);
 }
 
-void tst_Loading::init()
+void tst_Cycler::init()
 {
     QWebSettings::globalSettings()->setMaximumPagesInCache(0);
     QWebSettings::globalSettings()->setObjectCacheCapacities(0, 0, 0);
@@ -89,17 +89,17 @@ void tst_Loading::init()
 
 }
 
-void tst_Loading::cleanup()
+void tst_Cycler::cleanup()
 {
     delete m_view;
 }
 
-void tst_Loading::load_data()
+void tst_Cycler::load_data()
 {
     add_test_urls();
 }
 
-void tst_Loading::load()
+void tst_Cycler::load()
 {
     QFETCH(QUrl, url);
 
@@ -113,5 +113,5 @@ void tst_Loading::load()
     }
 }
 
-DBWEBTEST_MAIN(tst_Loading)
+DBWEBTEST_MAIN(tst_Cycler)
 #include "tst_cycler.moc"

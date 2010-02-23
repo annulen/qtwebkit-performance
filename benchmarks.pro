@@ -11,4 +11,6 @@ SUBDIRS = tests/loading/tst_loading.pro \
 !lessThan(QT_MINOR_VERSION, 6): SUBDIRS += reductions/loading_standalone/tst_loading_standalone.pro
 
 # host tools
+!symbian: {
 SUBDIRS += host-tools/http_server host-tools/mirror
+}

@@ -37,6 +37,43 @@
 #include <time.h>
 #include <sys/time.h>
 
+#ifdef Q_OS_SYMBIAN
+
+#include <e32base.h>
+#include <e32std.h>
+#include <HAL.h>
+
+#define MSECS(t) (t)
+
+static TInt getCounterFreq()
+{
+    static TInt freq = 0;
+    if(!freq)
+        HAL::Get(HALData::EFastCounterFrequency, freq);
+
+    return freq;
+}
+
+TUint32 startTime = 0;
+
+static unsigned int elapsedTime()
+{
+    TUint32 curTime = User::FastCounter();
+
+    return abs(((qreal)(curTime - startTime) * 1000) / getCounterFreq());
+}
+
+static void startTimer()
+{
+    startTime = User::FastCounter();
+}
+
+static void stopTimer()
+{
+  // NOP for symbian
+}
+
+#else
 #define MSECS(t) (t/1000000)
 
 static unsigned int sig_prof = 0;
@@ -46,8 +83,14 @@ static void sig_profiling(int)
     ++sig_prof;
 }
 
+static unsigned int elapsedTime()
+{
+    return sig_prof;
+}
+
 static void startTimer()
 {
+    sig_prof = 0;
     struct itimerval tim;
     tim.it_interval.tv_sec = 0;
     tim.it_interval.tv_usec = 1;
@@ -73,6 +116,13 @@ static void __attribute__((constructor)) benchmark_init()
     }
 
 }
+#endif // Q_OS_SYMBIAN
+
+static void resetTimer()
+{
+    stopTimer();
+    startTimer();
+}
 
 int BenchmarkController::defaultIterations = 11;
 
@@ -83,9 +133,7 @@ BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent,
     , m_parent(parent)
     , m_timed(false)
 {
-    stopTimer();
-    sig_prof = 0;
-    startTimer();
+    resetTimer();
 }
 
 BenchmarkController::~BenchmarkController()
@@ -101,9 +149,7 @@ void BenchmarkController::next()
     m_timed = false;
     ++i;
 
-    stopTimer();
-    sig_prof = 0;
-    startTimer();
+    resetTimer();
 }
 
 int BenchmarkController::iterations() const
@@ -114,7 +160,7 @@ int BenchmarkController::iterations() const
 long long BenchmarkController::timeElapsed() const
 {
     stopTimer();
-    return sig_prof;
+    return elapsedTime();
 }
 
 void BenchmarkController::timeNow()
@@ -129,8 +175,9 @@ SubSectionBenchmarkController::SubSectionBenchmarkController(const QString& name
     , m_iterations(iterations)
     , m_benchmark(name)
     , m_parent(parent)
+    , m_running(false)
+    , m_iterationTime(0)
 {
-    sig_prof = 0;
 }
 
 SubSectionBenchmarkController::~SubSectionBenchmarkController()
@@ -140,21 +187,27 @@ SubSectionBenchmarkController::~SubSectionBenchmarkController()
 
 void SubSectionBenchmarkController::next()
 {
-    stopTimer();
+    stopSubMeasure();
     if (i != 0)
-        m_benchmark.addResult(sig_prof);
+        m_benchmark.addResult(m_iterationTime);
     ++i;
-    sig_prof = 0;
+    m_iterationTime = 0;
 }
 
 void SubSectionBenchmarkController::startSubMeasure()
 {
+    m_running = true;
     startTimer();
 }
 
 void SubSectionBenchmarkController::stopSubMeasure()
 {
-    stopTimer();
+    if(m_running)
+    {
+        m_running = false;
+        stopTimer();
+        m_iterationTime =+ elapsedTime();
+    }
 }
 
 Benchmark::Benchmark()
