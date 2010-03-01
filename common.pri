@@ -37,3 +37,6 @@ symbian: {
     
     LIBS += -lhal
 }
+
+# Don't use Application bundles on Mac OS X
+CONFIG -= app_bundle
