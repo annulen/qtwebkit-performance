@@ -397,9 +397,11 @@ int main(int argc, char **argv)
     return 0;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
 quint64 qHash(const QUrl &url)
 {
     return qHash(url.toString());
 }
+#endif
 
 #include "main.moc"
