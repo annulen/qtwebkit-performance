@@ -307,6 +307,7 @@ SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
     if (indent.isEmpty())
         printf("Total mean: %8lld msecs per test, avg: %8lld\n",
                 result.mean / result.size, result.average / result.size);
+    fflush(stdout);
     return result;
 }
 

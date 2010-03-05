@@ -40,7 +40,11 @@ QStringList mainImpl()
     bool loadUrlFromDatabase = false;
     for (int i = 1; i < argumentsCount; ++i) {
         const QString argument = arguments.at(i);
-        if (argument == QLatin1String("-urlfile")) {
+        if (argument == QLatin1String("-out")) {
+            ++i;
+            freopen(arguments.at(i).toAscii().data(), "w", stdout);
+            continue;
+        } else if (argument == QLatin1String("-urlfile")) {
             ++i;
             if (!initUrlFromFile(arguments.at(i)))
                 qWarning() << "Error while including urlfile " << arguments.at(i);
