@@ -57,7 +57,7 @@ private:
 
 tst_Scrolling::~tst_Scrolling()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 void tst_Scrolling::initTestCase()

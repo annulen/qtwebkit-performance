@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2010 Holger Hans Peter Freyther
  * Copyright (C) 2010 Balazs Kelemen, University of Szeged
+ * Copyright (C) 2010 Benjamin Poulain, Nokia
  *
  * All rights reserved.
  *
@@ -29,7 +30,9 @@
 #ifndef benchmark_h
 #define benchmark_h
 
+#include "benchmarkoutputwriter.h"
 #include <QPair>
+#include <QSharedPointer>
 #include <QString>
 #include <QTimer>
 
@@ -99,28 +102,9 @@ private:
     unsigned int m_iterationTime;
 };
 
-struct SummaryResult {
-    SummaryResult()
-        : mean(0)
-        , average(0)
-        , size(0)
-    {}
+extern QSharedPointer<BenchmarkOutputWriter> outWriter;
 
-    long long mean;
-    long long average;
-    int size;
-};
-
-SummaryResult benchmarkOutput(const Benchmark&, const QString& indent = QString());
-
-/*
- * working on the benchmark
- */
-long long benchmarkMean(const Benchmark&);
-long long benchmarkAverage(const Benchmark&);
-long long benchmarkStdError(const Benchmark&);
-double benchmarkStdDeviationUnbiased(const Benchmark&);
-double benchmarkStdDeviationBiased(const Benchmark&);
+void benchmarkOutput();
 
 /**
  * Starts an event loop that runs until the given signal is received.

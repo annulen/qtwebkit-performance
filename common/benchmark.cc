@@ -31,7 +31,6 @@
 #include <QDebug>
 #include <QEventLoop>
 #include <QSignalSpy>
-#include <math.h>
 #include <signal.h>
 
 #include <time.h>
@@ -255,77 +254,11 @@ QList<long long> Benchmark::results() const
     return m_results;
 }
 
-long long benchmarkMean(const Benchmark& _results)
+QSharedPointer<BenchmarkOutputWriter> outWriter(new BenchmarkOutputHuman());
+
+void benchmarkOutput()
 {
-    QList<long long> results = _results.results();
-    qSort(results);
-
-    return results.at(results.size() / 2);
-}
-
-long long benchmarkAverage(const Benchmark& _results)
-{
-    long long res = 0;
-    foreach(long long val, _results.results())
-        res += val;
-
-    return res / _results.results().size();
-}
-
-SummaryResult benchmarkOutput(const Benchmark& parent, const QString& indent)
-{
-    SummaryResult result;
-
-    printf("%sPrinting result for: %s\n", qPrintable(indent), qPrintable(parent.name()));
-    foreach(Benchmark bench, parent.benchmarks()) {
-        if (!bench.benchmarks().isEmpty()) {
-            SummaryResult sum = benchmarkOutput(bench, indent + "\t");
-            result.mean += sum.mean;
-            result.average += sum.average;
-        } else {
-            long long run = benchmarkMean(bench);
-            long long avg = benchmarkAverage(bench);
-            int stddev = abs(benchmarkStdDeviationBiased(bench));
-            printf("%s\tbenchmark: %s\n"
-                   "%s\t\tmean: %8lld msecs +/- %d msecs, +/- %f %%\n"
-                   "%s\t\tavg:  %8lld msecs\n",
-                   qPrintable(indent), qPrintable(bench.name()),
-                   qPrintable(indent), run, stddev, (stddev * 100.0) / run,
-                   qPrintable(indent), avg);
-            printf("%s\t\t\t", qPrintable(indent));
-            foreach(long long res, bench.results()) {
-                printf("%lld, ", res);
-            }
-            printf("\n");
-            result.mean += run;
-            result.average += avg;
-        }
-
-        ++result.size;
-    }
-
-    if (indent.isEmpty())
-        printf("Total mean: %8lld msecs per test, avg: %8lld\n",
-                result.mean / result.size, result.average / result.size);
-    fflush(stdout);
-    return result;
-}
-
-double benchmarkStdDeviationBiased(const Benchmark& benchmark)
-{
-    long long mean = benchmarkMean(benchmark);
-    long long squares = 0;
-
-    foreach (long long res, benchmark.results()) {
-        long long delta = res - mean;
-        squares += (delta * delta);
-        if (squares < 0)
-            qFatal("numbers wrapped");
-    }
-
-    double variance = benchmark.results().size() - 1.0;
-    variance = squares / variance;
-    return sqrt(variance);
+    outWriter->writeOutput(*benchmark_parent);
 }
 
 bool waitForSignal(QObject* obj, const char* signal, int timeout)

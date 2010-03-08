@@ -52,7 +52,7 @@ private:
 
 tst_Loading::~tst_Loading()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 void tst_Loading::init()

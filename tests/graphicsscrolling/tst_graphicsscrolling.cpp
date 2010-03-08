@@ -87,7 +87,7 @@ private:
 
 tst_GraphicsScrolling::~tst_GraphicsScrolling()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 void tst_GraphicsScrolling::initTestCase()

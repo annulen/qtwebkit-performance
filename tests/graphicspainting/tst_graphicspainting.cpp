@@ -58,7 +58,7 @@ private:
 
 tst_GraphicsPainting::~tst_GraphicsPainting()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 void tst_GraphicsPainting::init()

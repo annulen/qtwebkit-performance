@@ -93,7 +93,7 @@ private:
 
 tst_FloatWidth::~tst_FloatWidth()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 static void loadData(const QString& fileName, QVector<QFont>& fonts, QList<Text>& data)

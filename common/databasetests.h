@@ -1,7 +1,27 @@
+/*
+ * Copyright (C) 2010 Benjamin Poulain, Nokia
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
 #ifndef DATABASETESTS_H
 #define DATABASETESTS_H
 
 #include "urlfilereader.h"
+#include "benchmarkoutputwriter.h"
 
 #include <QCoreApplication>
 #include <QSqlQuery>
@@ -31,6 +51,11 @@ static void initUrlFromDatabase()
 
 QStringList mainImpl()
 {
+    enum OutputType {
+        Human,
+        Csv
+    };
+
     const QStringList arguments = QCoreApplication::arguments();
     QStringList ouputArguments;
     ouputArguments.append(arguments[0]);
@@ -38,12 +63,16 @@ QStringList mainImpl()
     const int argumentsCount = arguments.size();
     bool loadedUrlFromFile = false;
     bool loadUrlFromDatabase = false;
+    QString outputFilePath;
+    OutputType outputType = Human;
     for (int i = 1; i < argumentsCount; ++i) {
         const QString argument = arguments.at(i);
         if (argument == QLatin1String("-out")) {
             ++i;
-            freopen(arguments.at(i).toAscii().data(), "w", stdout);
-            continue;
+            if (i < argumentsCount) {
+                outputFilePath = arguments.at(i);
+                continue;
+            }
         } else if (argument == QLatin1String("-urlfile")) {
             ++i;
             if (!initUrlFromFile(arguments.at(i)))
@@ -73,9 +102,26 @@ QStringList mainImpl()
                     qWarning() << "-iterations expect a number argument. Default iterations will be used.";
             }
             continue;
+        } else if (arguments.at(i) == QLatin1String("-outputtype")) {
+            ++i;
+            if (i < argumentsCount) {
+                const QString outputTypeString = arguments.at(i);
+                if (outputTypeString == QLatin1String("csv")) {
+                    outputType = Csv;
+                }
+                continue;
+            }
         }
         ouputArguments.append(arguments.at(i));
     }
+
+    // configure the output writer
+    if (outputType == Csv) {
+        outWriter = QSharedPointer<BenchmarkOutputWriter>(new BenchmarkOutputCsv(outputFilePath));
+    } else {
+        outWriter = QSharedPointer<BenchmarkOutputWriter>(new BenchmarkOutputHuman(outputFilePath));
+    }
+
     // url file has precedence over the database
     // so a url file can be used to reduce the scope of a database
     if (!loadedUrlFromFile && loadUrlFromDatabase)

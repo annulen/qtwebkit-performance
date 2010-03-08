@@ -56,7 +56,7 @@ private:
 
 tst_Layout::~tst_Layout()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 void tst_Layout::init()

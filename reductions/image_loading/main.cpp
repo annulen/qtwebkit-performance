@@ -42,7 +42,7 @@ public:
     tst_ImageLoading() {}
     ~tst_ImageLoading()
     {
-         benchmarkOutput(*benchmark_parent);
+         benchmarkOutput();
     }
 
 private Q_SLOTS:

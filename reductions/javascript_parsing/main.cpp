@@ -94,7 +94,7 @@ class tst_JavaScriptParsing : public QObject {
 public:
     ~tst_JavaScriptParsing()
     {
-         benchmarkOutput(*benchmark_parent);
+         benchmarkOutput();
     }
 
 private Q_SLOTS:

@@ -52,7 +52,7 @@ private:
 
 tst_Cycler::~tst_Cycler()
 {
-    benchmarkOutput(*benchmark_parent);
+    benchmarkOutput();
 }
 
 void tst_Cycler::init()
