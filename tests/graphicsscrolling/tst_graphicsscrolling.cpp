@@ -150,7 +150,7 @@ void tst_GraphicsScrolling::scroll()
 
     // wait for Javascript's lazy loading of ressources
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN)
-    QTest::qWait(1500);4
+    QTest::qWait(1500);
 #else
     QTest::qWait(500);
 #endif
