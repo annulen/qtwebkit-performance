@@ -1,5 +1,9 @@
 TEMPLATE = subdirs
 
+CONFIG += ordered
+
+SUBDIRS += common
+
 # tests
 TESTNAMES = loading painting scrolling cycler layout \
             graphicspainting graphicsscrolling
