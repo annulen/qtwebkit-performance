@@ -1,6 +1,3 @@
-TEMPLATE = app
-TARGET = tst_scrolling
-SOURCES += tst_scrolling.cpp \
-    paintingwebviewbench.cpp
-include(../../common.pri)
+include(../tests.pri)
+SOURCES += paintingwebviewbench.cpp
 HEADERS += paintingwebviewbench.h
