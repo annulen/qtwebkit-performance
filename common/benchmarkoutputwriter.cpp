@@ -115,6 +115,7 @@ SummaryResult BenchmarkOutputHuman::benchmarkOutputHumanReadableImpl(const Bench
             output->write("\t\t\t");
             foreach (long long res, bench.results()) {
                 output->write(QString::number(res).toLatin1());
+                output->write(" ");
             }
             output->write("\n");
             result.mean += run;
