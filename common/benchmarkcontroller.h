@@ -73,4 +73,16 @@ private:
     unsigned int m_iterationTime;
 };
 
+// used to mesure average time spent on each frame
+class TimePerFrameBenchmarkController : public AbstractBenchmarkController {
+public:
+    TimePerFrameBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent);
+
+    void next();
+    void newFrame();
+
+private:
+    unsigned int m_frameCount;
+};
+
 #endif // BENCHMARKCONTROLLER_H

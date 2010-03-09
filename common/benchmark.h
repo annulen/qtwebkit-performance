@@ -78,4 +78,8 @@ extern Benchmark* benchmark_parent;
     for (SubSectionBenchmarkController web__controller(testName, dataName, benchmark_parent); \
          web__controller.currentIteration() < web__controller.iterations(); web__controller.next())
 
+#define WEB_BENCHMARK_TIME_PER_FRAME(testName, dataName) \
+    for (TimePerFrameBenchmarkController web__controller(testName, dataName, benchmark_parent); \
+         web__controller.currentIteration() < web__controller.iterations(); web__controller.next())
+
 #endif

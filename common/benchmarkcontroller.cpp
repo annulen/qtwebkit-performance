@@ -179,10 +179,36 @@ void SubSectionBenchmarkController::startSubMeasure()
 
 void SubSectionBenchmarkController::stopSubMeasure()
 {
-    if(m_running)
-    {
+    if (m_running) {
         m_running = false;
         stopTimer();
         m_iterationTime =+ elapsedTime();
     }
 }
+
+TimePerFrameBenchmarkController::TimePerFrameBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent)
+    : AbstractBenchmarkController(testName, dataName, parent)
+    , m_frameCount(0)
+{
+    resetTimer();
+}
+
+void TimePerFrameBenchmarkController::next()
+{
+    if (currentIteration() != 0) {
+        stopTimer();
+        // * 1000 in order to have correct accuracy. The results are
+        // no longer is msec
+        m_benchmark.addResult(1000.0 * elapsedTime() / m_frameCount);
+    }
+    m_frameCount = 0;
+    AbstractBenchmarkController::next();
+
+    resetTimer();
+}
+
+void TimePerFrameBenchmarkController::newFrame()
+{
+    ++m_frameCount;
+}
+

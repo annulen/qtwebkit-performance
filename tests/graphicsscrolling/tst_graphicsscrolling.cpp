@@ -159,16 +159,20 @@ void tst_GraphicsScrolling::scroll()
     QWebFrame* mainFrame = m_page->mainFrame();
 
     const int scrollIncrement = 30;
-    WEB_BENCHMARK("graphicsscrolling::scroll", url.toString()) {
-        mainFrame->setScrollPosition(QPoint(0, 0));
-        m_view->update();
+    // first rendering outside of the benchmark
+    mainFrame->setScrollPosition(QPoint(0, 0));
+    m_view->update();
+    qApp->processEvents();
 
+    WEB_BENCHMARK_TIME_PER_FRAME("graphicsscrolling::scroll", url.toString()) {
         do {
+            web__controller.newFrame();
             mainFrame->scroll(0, scrollIncrement);
             qApp->processEvents();
         } while(mainFrame->scrollBarValue(Qt::Vertical) < mainFrame->scrollBarMaximum(Qt::Vertical));
 
         do {
+            web__controller.newFrame();
             mainFrame->scroll(0, -scrollIncrement);
             qApp->processEvents();
         } while(mainFrame->scrollBarValue(Qt::Vertical) > 0);
