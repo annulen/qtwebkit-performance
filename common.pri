@@ -10,25 +10,17 @@ QT += testlib \
 isEmpty(INSTALL_DIR):INSTALL_DIR = $$[QT_INSTALL_BINS]
 target.path += $$INSTALL_DIR/qtwebkit-benchmark
 INSTALLS += target
-SOURCES += $$PWD/common/common_init.cpp \
-    $$PWD/common/benchmark.cc \
-    $$PWD/common/databasenetworkaccessmanager.cpp \
-    $$PWD/common/webpage.cpp \
-    $$PWD/common/benchmarkoutputwriter.cpp \
-    $$PWD/common/benchmarkcontroller.cpp
-HEADERS += $$PWD/common/benchmark.h \
-    $$PWD/common/common_init.h \
-    $$PWD/common/cookiejar.h \
-    $$PWD/common/databasenetworkaccessmanager.h \
-    $$PWD/common/databasenetworkreply.h \
-    $$PWD/common/databasetests.h \
-    $$PWD/common/urlfilereader.h \
-    $$PWD/common/webpage.h \
-    $$PWD/common/benchmarkoutputwriter.h \
-    $$PWD/common/benchmarkcontroller.h \
-    $$PWD/common/benchmark_p.h
+
+INCLUDEPATH += $$PWD/common
+LIBPATH += $$PWD/common
+
+!symbian: {
+LIBS += -lcommon
+}
 
 symbian: {
+    LIBS += -lcommon.lib -lhal
+
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.EPOCSTACKSIZE = 0x14000
     TARGET.EPOCHEAPSIZE = 0x20000 \
@@ -39,8 +31,6 @@ symbian: {
         Max \
         32MB
     TARGET.CAPABILITY = All -TCB -DRM -AllFiles 
-    
-    LIBS += -lhal
 }
 
 # Don't use Application bundles on Mac OS X

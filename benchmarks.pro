@@ -1,19 +1,41 @@
 TEMPLATE = subdirs
 
+SUBDIRS += common
+
 # tests
 TESTNAMES = loading painting scrolling cycler layout \
             graphicspainting graphicsscrolling
 
-for(tname,TESTNAMES) {
-  SUBDIRS += tests/$${tname}/tst_$${tname}.pro
-}
+SUBDIRS += tests_loading tests_painting tests_scrolling tests_cycler tests_layout \
+           tests_graphicspainting tests_graphicsscrolling
+
+tests_loading.subdir = tests/loading
+tests_loading.depends = common
+tests_painting.subdir = tests/painting
+tests_painting.depends = common
+tests_scrolling.subdir = tests/scrolling
+tests_scrolling.depends = common
+tests_cycler.subdir = tests/cycler
+tests_cycler.depends = common
+tests_layout.subdir = tests/layout
+tests_layout.depends = common
+tests_graphicspainting.subdir = tests/graphicspainting
+tests_graphicspainting.depends = common
+tests_graphicsscrolling.subdir = tests/graphicsscrolling
+tests_graphicsscrolling.depends = common
 
 !symbian: {
 # reductions
-!lessThan(QT_MINOR_VERSION, 6): SUBDIRS += reductions/loading_standalone/tst_loading_standalone.pro
+!lessThan(QT_MINOR_VERSION, 6): {
+    SUBDIRS += tests_loading_standalone
+    tests_loading_standalone.subdir = reductions/loading_standalone
+    tests_loading_standalone.depends = common
+}
 
 # host tools
-SUBDIRS += host-tools/http_server host-tools/mirror
+SUBDIRS += host-tools/http_server ht_mirror
+ht_mirror.subdir = host-tools/mirror
+ht_mirror.depends = common
 }
 
 symbian: {
