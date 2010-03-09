@@ -2077,7 +2077,7 @@ QByteArray data997 = readFile("data/data997");
 QByteArray data998 = readFile("data/data998");
 QByteArray data999 = readFile("data/data999");
 
-    WEB_BENCHMARK("image-foo") {
+    WEB_BENCHMARK("image-foo", "testLoading") {
 OwnPtr<ImageDecoderQt> decoder0 = ImageDecoder::create(&data000);
 decoder0->setData(&data000, 0);
 decoder0->isSizeAvailable();
