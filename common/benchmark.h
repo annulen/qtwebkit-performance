@@ -65,17 +65,17 @@ extern Benchmark* benchmark_parent;
 
 #define WEB_BENCHMARK(testName, dataName) \
     for (BenchmarkController web__controller(testName, dataName, benchmark_parent); \
-         web__controller.i < web__controller.iterations(); web__controller.next())
+         web__controller.currentIteration() < web__controller.iterations(); web__controller.next())
 
 #define WEB_BENCHMARK_ITER(testName, dataName, iter) \
     for (BenchmarkController web__controller(testName, dataName, benchmark_parent, iter); \
-         web__controller.i < web__controller.iterations(); web__controller.next())
+         web__controller.currentIteration() < web__controller.iterations(); web__controller.next())
 
 #define TIME_NOW \
         web__controller.timeNow();
 
 #define WEB_BENCHMARK_SUBSECTION(testName, dataName) \
     for (SubSectionBenchmarkController web__controller(testName, dataName, benchmark_parent); \
-         web__controller.i < web__controller.iterations(); web__controller.next())
+         web__controller.currentIteration() < web__controller.iterations(); web__controller.next())
 
 #endif

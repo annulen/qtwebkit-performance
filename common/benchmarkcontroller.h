@@ -24,43 +24,51 @@
 #include "benchmark_p.h"
 #include <QString>
 
-class BenchmarkController {
+// A benchmark controller is used to collect the data and create a Benchmark object containing the result
+// AbstractBenchmarkController is the base class of controler, it is a controller that does not take any measurment
+class AbstractBenchmarkController {
 public:
-    BenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent, int iterations = defaultIterations);
-    ~BenchmarkController();
-
-    void next();
-    void timeNow();
-    int iterations() const;
-
-    int i;
+    AbstractBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent, int iterations = defaultIterations);
+    virtual ~AbstractBenchmarkController() { m_parent->addBenchmark(m_benchmark); }
+    virtual void next() { ++m_currentIteration; }
+    int iterations() const { return m_iterations; }
+    int currentIteration() const { return m_currentIteration; }
 
     static void setDefaultIterations(int i) { defaultIterations = i; }
     static int defaultIterations;
 
+protected:
+    Benchmark m_benchmark;
+    Benchmark* const m_parent;
+
+private:
+    int m_currentIteration;
+    const int m_iterations;
+};
+
+// classing benchmark controller to get the time of a section
+class BenchmarkController : public AbstractBenchmarkController {
+public:
+    BenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent);
+
+    void next();
+    void timeNow();
+
 private:
     long long timeElapsed() const;
-    const int m_iterations;
-    Benchmark m_benchmark;
-    Benchmark* m_parent;
     bool m_timed;
 };
 
 // used to measure sub-sections of the code which is run multiple time
-class SubSectionBenchmarkController {
+class SubSectionBenchmarkController : public AbstractBenchmarkController {
 public:
-    SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent, int iterations = 11);
-    ~SubSectionBenchmarkController();
+    SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent);
+
     void next();
     void startSubMeasure();
     void stopSubMeasure();
-    int iterations() const { return m_iterations; }
 
-    int i;
 private:
-    const int m_iterations;
-    Benchmark m_benchmark;
-    Benchmark* m_parent;
     bool m_running;
     unsigned int m_iterationTime;
 };

@@ -114,37 +114,32 @@ static void resetTimer()
     startTimer();
 }
 
-int BenchmarkController::defaultIterations = 11;
-
-BenchmarkController::BenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations)
-    : i(0)
-    , m_iterations(iterations)
-    , m_benchmark(testName, dataName)
+AbstractBenchmarkController::AbstractBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent, int iterations)
+    : m_benchmark(testName, dataName)
     , m_parent(parent)
+    , m_currentIteration(0)
+    , m_iterations(iterations)
+{
+
+}
+
+int AbstractBenchmarkController::defaultIterations = 11;
+
+BenchmarkController::BenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent)
+    : AbstractBenchmarkController(testName, dataName, parent)
     , m_timed(false)
 {
     resetTimer();
 }
 
-BenchmarkController::~BenchmarkController()
-{
-    m_parent->addBenchmark(m_benchmark);
-}
-
-
 void BenchmarkController::next()
 {
-    if (!m_timed && i != 0)
+    if (!m_timed && currentIteration() != 0)
         m_benchmark.addResult(timeElapsed());
     m_timed = false;
-    ++i;
+    AbstractBenchmarkController::next();
 
     resetTimer();
-}
-
-int BenchmarkController::iterations() const
-{
-    return m_iterations;
 }
 
 long long BenchmarkController::timeElapsed() const
@@ -155,32 +150,24 @@ long long BenchmarkController::timeElapsed() const
 
 void BenchmarkController::timeNow()
 {
-    if (i != 0)
+    if (currentIteration() != 0)
         m_benchmark.addResult(timeElapsed());
     m_timed = true;
 }
 
-SubSectionBenchmarkController::SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations)
-    : i(0)
-    , m_iterations(iterations)
-    , m_benchmark(testName, dataName)
-    , m_parent(parent)
+SubSectionBenchmarkController::SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent)
+    : AbstractBenchmarkController(testName, dataName, parent)
     , m_running(false)
     , m_iterationTime(0)
 {
 }
 
-SubSectionBenchmarkController::~SubSectionBenchmarkController()
-{
-    m_parent->addBenchmark(m_benchmark);
-}
-
 void SubSectionBenchmarkController::next()
 {
     stopSubMeasure();
-    if (i != 0)
+    if (currentIteration() != 0)
         m_benchmark.addResult(m_iterationTime);
-    ++i;
+    AbstractBenchmarkController::next();
     m_iterationTime = 0;
 }
 
