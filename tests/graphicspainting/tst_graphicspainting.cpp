@@ -112,7 +112,7 @@ void tst_GraphicsPainting::paint()
 #if defined(Q_WS_X11)
     const bool needToSync = pixmap.paintEngine()->type() != QPaintEngine::Raster;
 #endif
-    WEB_BENCHMARK(url.toString()) {
+    WEB_BENCHMARK("graphicsview::paint", url.toString()) {
         QPainter painter(&pixmap);
         m_gView->render(&painter);
 

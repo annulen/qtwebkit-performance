@@ -42,10 +42,10 @@
 
 class Benchmark {
 public:
-    Benchmark();
-    Benchmark(const QString& name);
+    Benchmark(const QString& testName, const QString& dataName = QString());
 
-    QString name() const;
+    QString testName() const { return m_testName; }
+    QString dataName() const { return m_dataName; }
     bool isEmpty() const;
 
     void addBenchmark(const Benchmark&);
@@ -56,14 +56,15 @@ public:
 
 private:
     bool m_empty;
-    QString m_name;
+    QString m_testName;
+    QString m_dataName;
     QList<long long> m_results;
     QList<Benchmark> m_benchmarks;
 };
 
 class BenchmarkController {
 public:
-    BenchmarkController(const QString& name, Benchmark *parent, int iterations = defaultIterations);
+    BenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations = defaultIterations);
     ~BenchmarkController();
 
     void next();
@@ -86,7 +87,7 @@ private:
 // used to measure sub-sections of the code which is run multiple time
 class SubSectionBenchmarkController {
 public:
-    SubSectionBenchmarkController(const QString& name, Benchmark *parent, int iterations = 11);
+    SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations = 11);
     ~SubSectionBenchmarkController();
     void next();
     void startSubMeasure();
@@ -124,24 +125,24 @@ extern Benchmark* benchmark_parent;
 /*
  * macros for benchmarking
  */
-#define WEB_CREATE_GROUP(name) \
+#define WEB_CREATE_GROUP(testName, dataName) \
     static Benchmark* old_parent = ::benchmark_parent; \
-    static Benchmark* benchmark_parent = new Benchmark(name); \
+    static Benchmark* benchmark_parent = new Benchmark(testName, dataName); \
     ::old_parent->add(benchmark_parent);
 
-#define WEB_BENCHMARK(name) \
-    for (BenchmarkController web__controller(name, benchmark_parent); \
+#define WEB_BENCHMARK(testName, dataName) \
+    for (BenchmarkController web__controller(testName, dataName, benchmark_parent); \
          web__controller.i < web__controller.iterations(); web__controller.next())
 
-#define WEB_BENCHMARK_ITER(name, iter) \
-    for (BenchmarkController web__controller(name, benchmark_parent, iter); \
+#define WEB_BENCHMARK_ITER(testName, dataName, iter) \
+    for (BenchmarkController web__controller(testName, dataName, benchmark_parent, iter); \
          web__controller.i < web__controller.iterations(); web__controller.next())
 
 #define TIME_NOW \
         web__controller.timeNow();
 
-#define WEB_BENCHMARK_SUBSECTION(name) \
-    for (SubSectionBenchmarkController web__controller(name, benchmark_parent); \
+#define WEB_BENCHMARK_SUBSECTION(testName, dataName) \
+    for (SubSectionBenchmarkController web__controller(testName, dataName, benchmark_parent); \
          web__controller.i < web__controller.iterations(); web__controller.next())
 
 #endif

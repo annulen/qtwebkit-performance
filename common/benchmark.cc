@@ -125,10 +125,10 @@ static void resetTimer()
 
 int BenchmarkController::defaultIterations = 11;
 
-BenchmarkController::BenchmarkController(const QString& name, Benchmark* parent, int iterations)
+BenchmarkController::BenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations)
     : i(0)
     , m_iterations(iterations)
-    , m_benchmark(name)
+    , m_benchmark(testName, dataName)
     , m_parent(parent)
     , m_timed(false)
 {
@@ -169,10 +169,10 @@ void BenchmarkController::timeNow()
     m_timed = true;
 }
 
-SubSectionBenchmarkController::SubSectionBenchmarkController(const QString& name, Benchmark* parent, int iterations)
+SubSectionBenchmarkController::SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations)
     : i(0)
     , m_iterations(iterations)
-    , m_benchmark(name)
+    , m_benchmark(testName, dataName)
     , m_parent(parent)
     , m_running(false)
     , m_iterationTime(0)
@@ -209,19 +209,11 @@ void SubSectionBenchmarkController::stopSubMeasure()
     }
 }
 
-Benchmark::Benchmark()
-    : m_empty(true)
-{}
-
-Benchmark::Benchmark(const QString& name)
+Benchmark::Benchmark(const QString& testName, const QString& dataName)
     : m_empty(false)
-    , m_name(name)
+    , m_testName(testName)
+    , m_dataName(dataName)
 {
-}
-
-QString Benchmark::name() const
-{
-    return m_name;
 }
 
 bool Benchmark::isEmpty() const

@@ -123,7 +123,7 @@ void tst_Scrolling::scroll()
     QWebFrame* mainFrame = m_page->mainFrame();
 
     const int scrollIncrement = 30;
-    WEB_BENCHMARK(url.toString()) {
+    WEB_BENCHMARK("scrolling::scroll", url.toString()) {
         mainFrame->setScrollPosition(QPoint(0, 0));
         m_view->update();
 
@@ -184,7 +184,7 @@ void tst_Scrolling::paintingSpeed()
         QSKIP("No scrolling for this page", SkipSingle);
     }
 
-    WEB_BENCHMARK_SUBSECTION(url.toString()) {
+    WEB_BENCHMARK_SUBSECTION("scrolling::paintingSpeed", url.toString()) {
         view.controller = &web__controller;
         view.testing = true;
         const int scrollIncrement = 30;

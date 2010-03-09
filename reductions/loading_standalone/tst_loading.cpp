@@ -100,7 +100,7 @@ tst_Loading::~tst_Loading()
 void tst_Loading::loadAll()
 {
 
-    WEB_BENCHMARK("loadAll") {
+    WEB_BENCHMARK("testLoadingReduction", "loadAll") {
         Client client;
 
         createJob(&client, QUrl("http://en.wikipedia.org/wiki/Maxwell_equations"));

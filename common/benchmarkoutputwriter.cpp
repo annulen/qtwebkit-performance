@@ -94,7 +94,7 @@ SummaryResult BenchmarkOutputHuman::benchmarkOutputHumanReadableImpl(const Bench
 {
     SummaryResult result;
 
-    const QString headerString = QString::fromLatin1("%1Printing result for: %2\n").arg(indent).arg(parent.name());
+    const QString headerString = QString::fromLatin1("%1Printing result for: %2\n").arg(indent).arg(parent.testName());
     output->write(headerString.toLatin1());
     foreach (Benchmark bench, parent.benchmarks()) {
         if (!bench.benchmarks().isEmpty()) {
@@ -105,10 +105,10 @@ SummaryResult BenchmarkOutputHuman::benchmarkOutputHumanReadableImpl(const Bench
             long long run = benchmarkMean(bench);
             long long avg = benchmarkAverage(bench);
             int stddev = abs(benchmarkStdDeviationBiased(bench));
-            QString outputString = QString::fromLatin1("%1\tbenchmark: %2\n"
-                                                       "%1\t\tmean: %3 msecs +/- %4 msecs, +/- %5 %\n"
-                                                       "%1\t\tavg:  %6 msecs\n");
-            outputString = outputString.arg(indent).arg(bench.name()).arg(run).arg(stddev).arg(stddev * 100.0 / run).arg(avg);
+            QString outputString = QString::fromLatin1("%1\tbenchmark: %2\t%3\n"
+                                                       "%1\t\tmean: %4 msecs +/- %5 msecs, +/- %6 %\n"
+                                                       "%1\t\tavg:  %7 msecs\n");
+            outputString = outputString.arg(indent).arg(bench.testName()).arg(bench.dataName()).arg(run).arg(stddev).arg(stddev * 100.0 / run).arg(avg);
             output->write(outputString.toLatin1());
 
             output->write(indent.toLatin1());
@@ -142,8 +142,8 @@ void BenchmarkOutputCsv::writeOutput(const Benchmark& parent)
             long long run = benchmarkMean(bench);
             long long avg = benchmarkAverage(bench);
             int stddev = abs(benchmarkStdDeviationBiased(bench));
-            QString outputString = QString::fromLatin1("\"%1\",%2,%3,%4\n");
-            outputString = outputString.arg(bench.name()).arg(run).arg(stddev).arg(avg);
+            QString outputString = QString::fromLatin1("\"%1\",\"%2\",%3,%4,%5\n");
+            outputString = outputString.arg(bench.testName()).arg(bench.dataName()).arg(run).arg(stddev).arg(avg);
             output->write(outputString.toLatin1());
         }
     }

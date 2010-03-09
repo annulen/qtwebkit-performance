@@ -98,7 +98,7 @@ void tst_Layout::layout()
 {
     QFETCH(QUrl, url);
 
-    WEB_BENCHMARK(url.toString()) {
+    WEB_BENCHMARK("layout::layout", url.toString()) {
         m_view->load(url);
         ::waitForSignal(m_page->mainFrame(), SIGNAL(initialLayoutCompleted()));
         TIME_NOW

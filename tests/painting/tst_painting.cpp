@@ -108,7 +108,7 @@ void tst_Painting::paint()
 #if defined(Q_WS_X11)
     const bool needToSync = pixmap.paintEngine()->type() != QPaintEngine::Raster;
 #endif
-    WEB_BENCHMARK(url.toString()) {
+    WEB_BENCHMARK("painting::paint", url.toString()) {
         QPainter painter(&pixmap);
         mainFrame->render(&painter, QRect(QPoint(0, 0), m_page->viewportSize()));
         painter.end();
@@ -152,7 +152,7 @@ void tst_Painting::fullPagePaint()
 #if defined(Q_WS_X11)
     const bool needToSync = pixmap.paintEngine()->type() != QPaintEngine::Raster;
 #endif
-    WEB_BENCHMARK(url.toString()) {
+    WEB_BENCHMARK("painting::fullPagePaint", url.toString()) {
         QPainter painter(&pixmap);
         rootElement.render(&painter);
         painter.end();

@@ -103,7 +103,7 @@ void tst_Cycler::load()
 {
     QFETCH(QUrl, url);
 
-    WEB_BENCHMARK(url.toString()) {
+    WEB_BENCHMARK("cycler::load", url.toString()) {
         m_view->load(url);
         // really wait for loading..
         ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
