@@ -30,81 +30,14 @@
 #ifndef benchmark_h
 #define benchmark_h
 
+#include "benchmarkcontroller.h"
 #include "benchmarkoutputwriter.h"
-#include <QPair>
 #include <QSharedPointer>
-#include <QString>
-#include <QTimer>
 
-/**
- * Benchmark related functionality
+/*
+ * For generating the benchmark output
  */
-
-class Benchmark {
-public:
-    Benchmark(const QString& testName, const QString& dataName = QString());
-
-    QString testName() const { return m_testName; }
-    QString dataName() const { return m_dataName; }
-    bool isEmpty() const;
-
-    void addBenchmark(const Benchmark&);
-    QList<Benchmark> benchmarks() const;
-
-    void addResult(long long result);
-    QList<long long> results() const;
-
-private:
-    bool m_empty;
-    QString m_testName;
-    QString m_dataName;
-    QList<long long> m_results;
-    QList<Benchmark> m_benchmarks;
-};
-
-class BenchmarkController {
-public:
-    BenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations = defaultIterations);
-    ~BenchmarkController();
-
-    void next();
-    void timeNow();
-    int iterations() const;
-
-    int i;
-
-    static void setDefaultIterations(int i) { defaultIterations = i; }
-    static int defaultIterations;
-
-private:
-    long long timeElapsed() const;
-    const int m_iterations;
-    Benchmark m_benchmark;
-    Benchmark* m_parent;
-    bool m_timed;
-};
-
-// used to measure sub-sections of the code which is run multiple time
-class SubSectionBenchmarkController {
-public:
-    SubSectionBenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent, int iterations = 11);
-    ~SubSectionBenchmarkController();
-    void next();
-    void startSubMeasure();
-    void stopSubMeasure();
-    int iterations() const { return m_iterations; }
-
-    int i;
-private:
-    const int m_iterations;
-    Benchmark m_benchmark;
-    Benchmark* m_parent;
-    bool m_running;
-    unsigned int m_iterationTime;
-};
-
 extern QSharedPointer<BenchmarkOutputWriter> outWriter;
-
 void benchmarkOutput();
 
 /**

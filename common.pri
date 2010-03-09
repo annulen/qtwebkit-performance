@@ -14,7 +14,8 @@ SOURCES += $$PWD/common/common_init.cpp \
     $$PWD/common/benchmark.cc \
     $$PWD/common/databasenetworkaccessmanager.cpp \
     $$PWD/common/webpage.cpp \
-    $$PWD/common/benchmarkoutputwriter.cpp
+    $$PWD/common/benchmarkoutputwriter.cpp \
+    $$PWD/common/benchmarkcontroller.cpp
 HEADERS += $$PWD/common/benchmark.h \
     $$PWD/common/common_init.h \
     $$PWD/common/cookiejar.h \
@@ -23,7 +24,9 @@ HEADERS += $$PWD/common/benchmark.h \
     $$PWD/common/databasetests.h \
     $$PWD/common/urlfilereader.h \
     $$PWD/common/webpage.h \
-    $$PWD/common/benchmarkoutputwriter.h
+    $$PWD/common/benchmarkoutputwriter.h \
+    $$PWD/common/benchmarkcontroller.h \
+    $$PWD/common/benchmark_p.h
 
 symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
