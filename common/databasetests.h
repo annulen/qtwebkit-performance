@@ -67,7 +67,15 @@ QStringList mainImpl()
     OutputType outputType = Human;
     for (int i = 1; i < argumentsCount; ++i) {
         const QString argument = arguments.at(i);
-        if (argument == QLatin1String("-out")) {
+        if (argument == QLatin1String("-help")) {
+            printf("Optionnal arguments for the WebKit benchmarks:\n"
+                   " -out filename                 Save the output in filename instead of showing it in the terminal\n"
+                   " -database path_to_database    Use the database as source of data for the test."
+                   " If the database contains a list of url, those url are the one tested\n"
+                   " -urlfile filename             Use the urls of filename for the test. Those urls have precedence over those defined with -database\n"
+                   " -outputtype csv|human         Change the way the benchmark results are reported. \"human\" is the default\n"
+                   "\n\n");
+        } else if (argument == QLatin1String("-out")) {
             ++i;
             if (i < argumentsCount) {
                 outputFilePath = arguments.at(i);
