@@ -27,6 +27,8 @@
 #include "WebCore_classes.h"
 
 #include "benchmark.h"
+#include "databasenetworkaccessmanager.h"
+#include "databasetests.h"
 
 #include <time.h>
 
@@ -673,10 +675,6 @@ void tst_Loading::dateParsingPosix()
     }
 }
 
-int main(int argc, char **argv)
-{
-    QCoreApplication app(argc, argv);
-    tst_Loading tc;
-    return QTest::qExec(&tc, argc, argv);
-}
+DBWEBTEST_MAIN(tst_Loading)
+
 #include "tst_loading.moc"

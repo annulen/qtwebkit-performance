@@ -31,8 +31,6 @@
 #include <QList>
 #include <QUrl>
 
-static QList<QUrl> globalUrlList;
-
 void add_url_to_test_urls(const QUrl &url);
 
 QList<QUrl> test_urls();

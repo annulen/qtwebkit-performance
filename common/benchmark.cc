@@ -55,7 +55,7 @@ void Benchmark::addResult(long long result)
     m_results.append(result);
 }
 
-QSharedPointer<BenchmarkOutputWriter> outWriter(new BenchmarkOutputHuman());
+QSharedPointer<BenchmarkOutputWriter> outWriter(0);
 
 void benchmarkOutput()
 {
@@ -77,4 +77,4 @@ bool waitForSignal(QObject* obj, const char* signal, int timeout)
     return timeoutSpy.isEmpty();
 }
 
-Benchmark* benchmark_parent = new Benchmark("total");
+Benchmark* benchmark_parent = 0;

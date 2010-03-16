@@ -22,6 +22,7 @@
 
 #include "urlfilereader.h"
 #include "benchmarkoutputwriter.h"
+#include "common_init.h"
 
 #include <QCoreApplication>
 #include <QSqlQuery>

@@ -42,6 +42,7 @@ QStringList mainImpl();
 #define DBWEBTEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
 { \
+    benchmark_parent = new Benchmark("total"); \
     QApplication app(argc, argv); \
     TestObject tc; \
     return QTest::qExec(&tc, mainImpl()); \
