@@ -4,10 +4,10 @@ SUBDIRS += common
 
 # tests
 TESTNAMES = loading painting scrolling cycler layout \
-            graphicspainting graphicsscrolling
+            graphicspainting graphicsscrolling zooming
 
 SUBDIRS += tests_loading tests_painting tests_scrolling tests_cycler tests_layout \
-           tests_graphicspainting tests_graphicsscrolling
+           tests_graphicspainting tests_graphicsscrolling tests_zooming
 
 tests_loading.subdir = tests/loading
 tests_loading.depends = common
@@ -23,6 +23,8 @@ tests_graphicspainting.subdir = tests/graphicspainting
 tests_graphicspainting.depends = common
 tests_graphicsscrolling.subdir = tests/graphicsscrolling
 tests_graphicsscrolling.depends = common
+tests_zooming.subdir = tests/zooming
+tests_zooming.depends = common
 
 !symbian: {
 # reductions
