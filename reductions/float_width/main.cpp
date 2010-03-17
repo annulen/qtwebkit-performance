@@ -130,7 +130,7 @@ tst_FloatWidth::tst_FloatWidth()
 
 void tst_FloatWidth::floatWidth_western()
 {
-    WEB_BENCHMARK("floatWidth_western") {
+    WEB_BENCHMARK("floatWidth_western", "floatWidth_western") {
         foreach(const Text& text, western_data) {
             QFont font = western_fonts.at(text.font_id - 1);
             font.setWordSpacing(text.wordSpacing);
@@ -142,7 +142,7 @@ void tst_FloatWidth::floatWidth_western()
 
 void tst_FloatWidth::floatWidth_western_fasta()
 {
-    WEB_BENCHMARK("floatWidth_western_fasta") {
+    WEB_BENCHMARK("floatWidth_western_fasta", "floatWidth_western_fasta") {
         foreach(const Text& text, western_data) {
             QFont font = western_fonts.at(text.font_id - 1);
             font.setWordSpacing(text.wordSpacing);
