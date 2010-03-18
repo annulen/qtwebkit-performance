@@ -29,6 +29,7 @@
 #include <QApplication>
 #include <QBasicTimer>
 #include <QDebug>
+#include <QSet>
 
 #include <qwebelement.h>
 #include <qwebframe.h>
@@ -119,6 +120,7 @@ public:
 public Q_SLOTS:
     void start()
     {
+        m_openList.insert(QUrl(m_startUrl));
         navigate(m_startUrl);
     }
 
@@ -137,64 +139,97 @@ private Q_SLOTS:
         }
 
 
-        if (!finished) {
-            qWarning() << "Load failed trying the start";
-            QMetaObject::invokeMethod(this, "start", Qt::QueuedConnection);
-            return;
+        if (!finished)
+            qWarning() << "Load of " << m_webView->page()->mainFrame()->requestedUrl() << " failed";
+
+        // extend the closed list with what have been loaded
+        recursivelyExcludeLoadedUrls(m_webView->page()->mainFrame());
+
+        // find the new urls
+        recursivelyFindNewUrls(m_webView->page()->mainFrame());
+
+        // pick a "random" link
+        if (m_openList.isEmpty()) {
+            qWarning("All the web has been visited :)");
+            qApp->exit();
         }
 
-        // pick a random link.
-        QList<QWebElement> result = m_webView->page()->mainFrame()->findAllElements("a").toList();
-        if (result.isEmpty())
-            return start();
+        QSet<QUrl>::iterator openListIterator = m_openList.begin();
+        const int rand = random() % m_openList.size();
+        openListIterator += rand;
 
-        QString newTarget;
-        const QUrl oldUrl = m_webView->url();
-        int tries = 0;
-        do {
-            int rand = random() % result.size();
-            QWebElement element = result.at(rand);
-            QUrl href = element.attribute("href");
-            QUrl target;
-            if (href.isRelative())
-                target = oldUrl.resolved(href);
-            else if (href.scheme().startsWith("http"))
-                target = href.toString();
-
-            if (oldUrl.host() != target.host() || oldUrl.path() != target.path())
-                newTarget = target.toString();
-
-            if (++tries == 30)
-                return start();
-        } while(newTarget.isEmpty() || newTarget == m_lastTarget);
-
-        navigate(newTarget);
+        navigate(*openListIterator);
     }
 
 private:
-    void navigate(const QString& target)
+    void navigate(const QUrl& target)
     {
         // timeout, in case we will get stuck
         m_timeout.start(3 * 60 * 1000, this);
 
-        qDebug() << "New target" << target;
-        m_lastTarget = target;
-        m_webView->load(m_lastTarget);
+        qDebug() << "Visiting: " << target.toString();
+        m_closedList.insert(target);
+        m_openList.remove(target);
+        m_webView->load(target);
     }
 
     void timerEvent(QTimerEvent* e)
     {
-        if (m_timeout.timerId() == e->timerId())
-            m_webView->stop();
+        if (m_timeout.timerId() == e->timerId()) {
+            qWarning("timeout");
+            loadFinished(false);
+        }
 
         QObject::timerEvent(e);
     }
+
+    void recursivelyExcludeLoadedUrls(const QWebFrame* const frame)
+    {
+        m_openList.remove(frame->url());
+        m_closedList.insert(frame->url());
+
+        m_openList.remove(frame->requestedUrl());
+        m_closedList.insert(frame->requestedUrl());
+
+        foreach (const QWebFrame* const childFrame, frame->childFrames()) {
+            recursivelyExcludeLoadedUrls(childFrame);
+        }
+    }
+
+    void recursivelyFindNewUrls(const QWebFrame* const frame)
+    {
+        const QList<QWebElement> result = frame->findAllElements("a").toList();
+        if (result.isEmpty())
+            return;
+
+        foreach (const QWebElement &element, result) {
+            QUrl href(element.attribute("href"));
+            if (href.isRelative())
+                href = frame->url().resolved(href);
+            else if (!href.scheme().startsWith("http"))
+                continue;
+
+            // some content use fragment to encode the page state, but it is too much
+            // overhead to test all urls with fragments just for the few pages that use
+            // it for encoding a state
+            href.setFragment(QString());
+
+            if (!m_closedList.contains(href))
+                m_openList.insert(href);
+        }
+
+        foreach (const QWebFrame* const childFrame, frame->childFrames()) {
+            recursivelyFindNewUrls(childFrame);
+        }
+    }
+
 
 private:
     QString m_startUrl;
     QBasicTimer m_timeout;
     QWebView* m_webView;
-    QString m_lastTarget;
+    QSet<QUrl> m_openList;
+    QSet<QUrl> m_closedList;
     bool m_playGame;
 };
 
