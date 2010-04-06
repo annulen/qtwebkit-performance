@@ -2,12 +2,11 @@ Makefile*
 *.o
 moc_*
 *.moc
-tst_loading
-tst_painting
 *.sw?
 mirror/mirror
 robustness/robustness
 *.png
 tst_*
+!tst_*.cpp
 callgrind.out.*
 qrc_*.cpp
