@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2010 Markus Goetz
- * Copyright (C) 2009 Original by Holger Hans Peter Freyther
+ * Copyright (C) 2010 Nokia
+ * Copyright (C) 2009 Holger Hans Peter Freyther
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,8 +20,8 @@
 
 #include <QtTest/QtTest>
 
-#include "common_init.h"
 #include "benchmark.h"
+#include "common_init.h"
 #include "databasenetworkaccessmanager.h"
 #include "databasetests.h"
 #include "webpage.h"
@@ -31,12 +31,12 @@
 #include <qwebview.h>
 #include <qpainter.h>
 
-class tst_Loading : public QObject
+class tst_Cycler : public QObject
 {
     Q_OBJECT
 
 public:
-    ~tst_Loading();
+    ~tst_Cycler();
 
 public Q_SLOTS:
     void initTestCase();
@@ -51,15 +51,16 @@ private:
     WebPage* m_page;
 };
 
-tst_Loading::~tst_Loading()
+tst_Cycler::~tst_Cycler()
 {
     benchmarkOutput();
 }
 
-void tst_Loading::initTestCase()
+void tst_Cycler::initTestCase()
 {
     QWebSettings::globalSettings()->setMaximumPagesInCache(0);
     QWebSettings::globalSettings()->setObjectCacheCapacities(0, 0, 0);
+
     m_view = new QWebView;
     m_page = new WebPage(m_view);
     m_view->setPage(m_page);
@@ -77,31 +78,40 @@ void tst_Loading::initTestCase()
 
     if (QSqlDatabase::database().isValid())
         m_page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
+
+
+    // this makes us different to the loading test...
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    m_view->showFullScreen();
+#else
+    m_view->show();
+#endif
+    QTest::qWaitForWindowShown(m_view);
 }
 
-void tst_Loading::cleanupTestCase()
+void tst_Cycler::cleanupTestCase()
 {
     delete m_view;
 }
-void tst_Loading::load_data()
+
+void tst_Cycler::load_data()
 {
-   add_test_urls();
+    add_test_urls();
 }
 
-void tst_Loading::load()
+void tst_Cycler::load()
 {
     QFETCH(QUrl, url);
 
-    WEB_BENCHMARK("loading_one_qnetworkaccessmanager::load", url.toString()) {
+    WEB_BENCHMARK("cycler_one_qnetworkaccessmanager::load", url.toString()) {
         m_view->load(url);
         // really wait for loading..
         ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
-
-        TIME_NOW
+        TIME_NOW;
         m_view->load(QUrl("about:blank"));
         QWebSettings::clearMemoryCaches();
     }
 }
 
-DBWEBTEST_MAIN(tst_Loading)
-#include "tst_loading_one_qnetworkaccessmanager.moc"
+DBWEBTEST_MAIN(tst_Cycler)
+#include "tst_cycler_one_qnetworkaccessmanager.moc"
