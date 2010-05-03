@@ -11,7 +11,8 @@ TESTNAMES = loading painting scrolling cycler layout \
 SUBDIRS += tests_loading tests_painting tests_scrolling tests_cycler tests_layout \
            tests_graphicspainting tests_graphicsscrolling tests_zooming \
            tests_loading_one_qnetworkaccessmanager \
-           tests_cycler_one_qnetworkaccessmanager
+           tests_cycler_one_qnetworkaccessmanager \
+           tests_cycler_one_qnetworkaccessmanager_with_pipelining
 
 tests_loading.subdir = tests/loading
 tests_loading.depends = common
@@ -33,6 +34,8 @@ tests_loading_one_qnetworkaccessmanager.subdir = tests/loading_one_qnetworkacces
 tests_loading_one_qnetworkaccessmanager.depends = common
 tests_cycler_one_qnetworkaccessmanager.subdir = tests/cycler_one_qnetworkaccessmanager
 tests_cycler_one_qnetworkaccessmanager.depends = common
+tests_cycler_one_qnetworkaccessmanager_with_pipelining.subdir = tests/cycler_one_qnetworkaccessmanager_with_pipelining
+tests_cycler_one_qnetworkaccessmanager_with_pipelining.depends = common
 
 !symbian: {
 # reductions
