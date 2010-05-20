@@ -50,8 +50,16 @@ static void initUrlFromDatabase()
     }
 }
 
+#if defined (Q_OS_SYMBIAN)
+#include "sym_iap_util.h"
+#endif
+
 QStringList mainImpl()
 {
+#if defined (Q_OS_SYMBIAN)
+    qt_SetDefaultIap();
+#endif
+
     enum OutputType {
         Human,
         Csv

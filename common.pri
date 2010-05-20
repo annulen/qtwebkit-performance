@@ -19,7 +19,7 @@ LIBS += -lcommon
 }
 
 symbian: {
-    LIBS += -lcommon.lib -lhal
+    LIBS += -lcommon.lib -lhal -lesock -linsock
 
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.EPOCSTACKSIZE = 0x14000
