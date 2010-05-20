@@ -80,6 +80,7 @@ void tst_Scrolling::init()
 
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
     m_view->showFullScreen();
+    m_view->window()->raise();
 #else
     m_page->setViewportSize(viewportSize);
     m_view->setFixedSize(viewportSize);

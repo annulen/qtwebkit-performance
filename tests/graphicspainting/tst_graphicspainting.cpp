@@ -77,6 +77,7 @@ void tst_GraphicsPainting::init()
     const QSize screenSize = QApplication::desktop()->geometry().size();
     m_gView->setFixedSize(screenSize);
     m_page->setViewportSize(screenSize);
+    m_gView->window()->raise();
 #else
     m_gView->setFixedSize(viewportSize);
     m_page->setViewportSize(viewportSize);

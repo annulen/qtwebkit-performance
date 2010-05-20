@@ -70,6 +70,7 @@ void tst_Loading::initTestCase()
     const QSize screenSize = QApplication::desktop()->geometry().size();
     m_view->setFixedSize(screenSize);
     m_page->setViewportSize(screenSize);
+    m_view->window()->raise();
 #else
     m_view->setFixedSize(viewportSize);
     m_page->setViewportSize(viewportSize);

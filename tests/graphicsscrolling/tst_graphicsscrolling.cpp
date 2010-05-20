@@ -114,6 +114,7 @@ void tst_GraphicsScrolling::init()
 
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
     m_gView->showFullScreen();
+    m_gView->window()->raise();
 #else
     m_page->setViewportSize(viewportSize);
     m_gView->setFixedSize(viewportSize);

@@ -82,6 +82,7 @@ void tst_Cycler::init()
     // this makes us different to the loading test...
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
     m_view->showFullScreen();
+    m_view->window()->raise();
 #else
     m_view->show();
 #endif
