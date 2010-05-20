@@ -54,7 +54,7 @@ ht_mirror.depends = common
 symbian: {
 load(data_caging_paths)
 
-TARGET.CAPABILITY = All -TCB -DRM -AllFiles 
+TARGET.CAPABILITY = NetworkServices LocalServices ReadUserData WriteUserData UserEnvironment
 RSS_RULES ="group_name=\"QtBenchmarks\";"
 
 vendorinfo = \
