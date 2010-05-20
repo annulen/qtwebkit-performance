@@ -24,13 +24,13 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.EPOCSTACKSIZE = 0x14000
     TARGET.EPOCHEAPSIZE = 0x20000 \
-        0x2000000 \
+        0x4000000 \
         // \
         Min \
         128kB, \
         Max \
-        32MB
-    TARGET.CAPABILITY = All -TCB -DRM -AllFiles 
+        64MB
+    TARGET.CAPABILITY = NetworkServices LocalServices ReadUserData WriteUserData UserEnvironment
 }
 
 # Don't use Application bundles on Mac OS X
