@@ -12,7 +12,7 @@ target.path += $$INSTALL_DIR/qtwebkit-benchmark
 INSTALLS += target
 
 INCLUDEPATH += $$PWD/common
-LIBPATH += $$PWD/common
+QMAKE_LIBDIR += $$PWD/common
 
 !symbian: {
 LIBS += -lcommon
