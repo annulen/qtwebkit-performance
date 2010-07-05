@@ -24,6 +24,12 @@
 #include "benchmark_p.h"
 #include <QString>
 
+#if (QT_VERSION >= 0x040700)
+#    include <QElapsedTimer>
+#else
+#    include <QTime>
+#endif
+
 // A benchmark controller is used to collect the data and create a Benchmark object containing the result
 // AbstractBenchmarkController is the base class of controler, it is a controller that does not take any measurment
 class AbstractBenchmarkController {
@@ -40,6 +46,12 @@ public:
 protected:
     Benchmark m_benchmark;
     Benchmark* const m_parent;
+
+#if (QT_VERSION >= 0x040700)
+    QElapsedTimer m_timer;
+#else
+    QTime m_timer;
+#endif
 
 private:
     int m_currentIteration;
