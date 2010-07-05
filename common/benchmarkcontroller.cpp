@@ -30,7 +30,7 @@ AbstractBenchmarkController::AbstractBenchmarkController(const QString& testName
 
 int AbstractBenchmarkController::defaultIterations = 11;
 
-BenchmarkController::BenchmarkController(const QString& testName, const QString& dataName, Benchmark *parent)
+BenchmarkController::BenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent)
     : AbstractBenchmarkController(testName, dataName, parent)
     , m_timed(false)
 {
@@ -98,9 +98,9 @@ TimePerFrameBenchmarkController::TimePerFrameBenchmarkController(const QString& 
 
 void TimePerFrameBenchmarkController::next()
 {
-    if (currentIteration() != 0) {
+    if (currentIteration() != 0)
         m_benchmark.addResult(m_timer.elapsed() / m_frameCount);
-    }
+
     m_frameCount = 0;
     AbstractBenchmarkController::next();
 

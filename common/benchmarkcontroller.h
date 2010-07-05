@@ -22,13 +22,15 @@
 #define BENCHMARKCONTROLLER_H
 
 #include "benchmark_p.h"
-#include <QString>
+
+class QString;
 
 #if (QT_VERSION >= 0x040700)
 #    include <QElapsedTimer>
 #else
 #    include <QTime>
 #endif
+
 
 // A benchmark controller is used to collect the data and create a Benchmark object containing the result
 // AbstractBenchmarkController is the base class of controler, it is a controller that does not take any measurment
@@ -58,6 +60,7 @@ private:
     const int m_iterations;
 };
 
+
 // classing benchmark controller to get the time of a section
 class BenchmarkController : public AbstractBenchmarkController {
 public:
@@ -70,6 +73,7 @@ private:
     long long timeElapsed() const;
     bool m_timed;
 };
+
 
 // used to measure sub-sections of the code which is run multiple time
 class SubSectionBenchmarkController : public AbstractBenchmarkController {
@@ -84,6 +88,7 @@ private:
     bool m_running;
     unsigned int m_iterationTime;
 };
+
 
 // used to mesure average time spent on each frame
 class TimePerFrameBenchmarkController : public AbstractBenchmarkController {
