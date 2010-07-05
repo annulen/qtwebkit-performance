@@ -29,7 +29,24 @@
 
 #include <qwebframe.h>
 #include <qwebview.h>
-#include <qpainter.h>
+
+static void loadUrl(QWebView* view, const QUrl& url) {
+    view->load(url);
+    ::waitForSignal(view, SIGNAL(loadFinished(bool)));
+
+    // wait for Javascript's lazy loading of ressources
+#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN)
+    QTest::qWait(1500);
+#else
+    QTest::qWait(500);
+#endif
+}
+
+static bool canScroll(QWebFrame* mainFrame) {
+    if (mainFrame->scrollBarValue(Qt::Vertical) == mainFrame->scrollBarMaximum(Qt::Vertical))
+        return false;
+    return true;
+}
 
 class tst_Scrolling : public QObject
 {
@@ -39,20 +56,18 @@ public:
     ~tst_Scrolling();
 
 public Q_SLOTS:
-    void initTestCase();
     void init();
     void cleanup();
 
 private Q_SLOTS:
     void scroll_data();
     void scroll();
+
     void paintingSpeed_data();
     void paintingSpeed();
 
 private:
-    QWebView* m_view;
-    WebPage* m_page;
-    QNetworkAccessManager* m_networkAccessManager;
+    PaintingWebViewBench* m_view;
 };
 
 tst_Scrolling::~tst_Scrolling()
@@ -60,31 +75,23 @@ tst_Scrolling::~tst_Scrolling()
     benchmarkOutput();
 }
 
-void tst_Scrolling::initTestCase()
-{
-    if (QSqlDatabase::database().isValid())
-        m_networkAccessManager = new DatabaseNetworkAccessManager;
-    else
-        m_networkAccessManager = 0;
-}
-
 void tst_Scrolling::init()
 {
-    m_view = new QWebView;
-    const QSize viewportSize(1024, 768);
-    m_page = new WebPage(this);
-    m_view->setPage(m_page);
-    m_page->setPreferredContentsSize(viewportSize);
-    if (m_networkAccessManager)
-        m_page->setNetworkAccessManager(m_networkAccessManager);
+    m_view = new PaintingWebViewBench();
+
+    QWebPage* page = new WebPage(m_view);
+    if (QSqlDatabase::database().isValid())
+        page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
+
+    m_view->setPage(page);
 
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
+    const QSize viewportSize(1024, 768);
+    page->setPreferredContentsSize(viewportSize);
     m_view->showFullScreen();
     m_view->window()->raise();
 #else
-    m_page->setViewportSize(viewportSize);
-    m_view->setFixedSize(viewportSize);
-    m_view->show();
+    m_view->showMaximized();
 #endif
     QTest::qWaitForWindowShown(m_view);
 }
@@ -110,37 +117,30 @@ void tst_Scrolling::scroll()
 {
     QFETCH(QUrl, url);
 
-    m_view->load(url);
-    ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
+    loadUrl(m_view, url);
 
-    // wait for Javascript's lazy loading of ressources
-#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN)
-    QTest::qWait(1500);
-#else
-    QTest::qWait(500);
-#endif
-
-    /* force a layout */
-    QWebFrame* mainFrame = m_page->mainFrame();
-
-    const int scrollIncrement = 30;
-    // first rendering outside of scope
+    QWebFrame* mainFrame = m_view->page()->mainFrame();
+    // first rendering outside of benchmarks
     mainFrame->setScrollPosition(QPoint(0, 0));
     m_view->update();
     qApp->processEvents();
 
+    if (!canScroll(mainFrame))
+        QSKIP("No scrolling for this page", SkipSingle);
+
     WEB_BENCHMARK_TIME_PER_FRAME("scrolling::scroll", url.toString()) {
+        const int scrollIncrement = 30;
         do {
             web__controller.newFrame();
             mainFrame->scroll(0, scrollIncrement);
             qApp->processEvents();
-        } while(mainFrame->scrollBarValue(Qt::Vertical) < mainFrame->scrollBarMaximum(Qt::Vertical));
+        } while (mainFrame->scrollBarValue(Qt::Vertical) < mainFrame->scrollBarMaximum(Qt::Vertical));
 
         do {
             web__controller.newFrame();
             mainFrame->scroll(0, -scrollIncrement);
             qApp->processEvents();
-        } while(mainFrame->scrollBarValue(Qt::Vertical) > 0);
+        } while (mainFrame->scrollBarValue(Qt::Vertical) > 0);
     }
 }
 
@@ -158,49 +158,29 @@ void tst_Scrolling::paintingSpeed()
 {
     QFETCH(QUrl, url);
 
-    PaintingWebViewBench view;
-    const QSize viewportSize(1024, 768);
-    QWebPage* page = view.page();
-    page->setPreferredContentsSize(viewportSize);
-    if (m_networkAccessManager)
-        page->setNetworkAccessManager(m_networkAccessManager);
+    loadUrl(m_view, url);
 
-#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
-    view.showFullScreen();
-#else
-    page->setViewportSize(viewportSize);
-    view.setFixedSize(viewportSize);
-    view.show();
-#endif
-    QTest::qWaitForWindowShown(&view);
-
-    view.load(url);
-    ::waitForSignal(&view, SIGNAL(loadFinished(bool)));
-
-    // wait for Javascript's lazy loading of ressources
-#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
-    QTest::qWait(1500);
-#else
-    QTest::qWait(500);
-#endif
-
-    QWebFrame* mainFrame = page->mainFrame();
-    if (mainFrame->scrollBarValue(Qt::Vertical) == mainFrame->scrollBarMaximum(Qt::Vertical)) {
+    QWebFrame* mainFrame = m_view->page()->mainFrame();
+    if (!canScroll(mainFrame))
         QSKIP("No scrolling for this page", SkipSingle);
-    }
+
+    // first rendering outside of scope
+    mainFrame->setScrollPosition(QPoint(0, 0));
+    m_view->update();
+    qApp->processEvents();
 
     WEB_BENCHMARK_SUBSECTION("scrolling::paintingSpeed", url.toString()) {
-        view.controller = &web__controller;
-        view.testing = true;
+        m_view->controller = &web__controller;
+        m_view->testing = true;
         const int scrollIncrement = 30;
         while (mainFrame->scrollBarValue(Qt::Vertical) < mainFrame->scrollBarMaximum(Qt::Vertical)) { // scroll forward
             mainFrame->scroll(0, scrollIncrement);
-            waitForSignal(&view, SIGNAL(painted()));
+            waitForSignal(m_view, SIGNAL(painted()));
         }
-        QCoreApplication::processEvents();
+
         while (mainFrame->scrollBarValue(Qt::Vertical) > 0) { // then backward
             mainFrame->scroll(0, -scrollIncrement);
-            waitForSignal(&view, SIGNAL(painted()));
+            waitForSignal(m_view, SIGNAL(painted()));
         }
     }
 }

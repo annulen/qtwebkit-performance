@@ -18,10 +18,10 @@
  */
 
 #include "paintingwebviewbench.h"
-#include <QTime>
 
-PaintingWebViewBench::PaintingWebViewBench()
-    : testing(false)
+PaintingWebViewBench::PaintingWebViewBench(QWidget* parent)
+    : QWebView(parent)
+    , testing(false)
     , controller(0)
 {
 }
@@ -32,8 +32,8 @@ void PaintingWebViewBench::paintEvent(QPaintEvent* event)
         controller->startSubMeasure();
         QWebView::paintEvent(event);
         controller->stopSubMeasure();
-    } else {
+
+        emit painted();
+    } else
         QWebView::paintEvent(event);
-    }
-    emit painted();
 }

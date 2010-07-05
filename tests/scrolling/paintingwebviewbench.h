@@ -29,7 +29,7 @@ class PaintingWebViewBench : public QWebView
 {
     Q_OBJECT
 public:
-    PaintingWebViewBench();
+    PaintingWebViewBench(QWidget* parent = 0);
 
     bool testing;
     SubSectionBenchmarkController* controller;
