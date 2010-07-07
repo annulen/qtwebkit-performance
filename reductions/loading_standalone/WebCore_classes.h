@@ -23,7 +23,6 @@
 #define WebCore_classes_h
 
 #include <QUrl>
-#include <time.h>
 
 class QNetworkAccessManager;
 extern QNetworkAccessManager* globalManager;
@@ -56,7 +55,9 @@ namespace WebCore {
             // known slicing...
             req.setUrl(m_url);
 
+            #ifdef __GNUC__
             #warning "TODO: also set raw headers... this might make a difference"
+            #endif
             return req;
         }
 
@@ -93,15 +94,10 @@ namespace WebCore {
             : m_client(client)
             , m_request(request)
         {
-            clock_gettime(CLOCK_MONOTONIC, &m_createTime);
         }
 
         ResourceHandleClient* client() const { return m_client; }
         ResourceRequest request() const { return m_request; }
-
-        struct timespec m_createTime;
-        struct timespec m_responseTime;
-        struct timespec m_finishTime;
 
     private:
         ResourceHandleClient* m_client;

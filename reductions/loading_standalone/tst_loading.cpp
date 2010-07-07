@@ -30,8 +30,6 @@
 #include "databasenetworkaccessmanager.h"
 #include "databasetests.h"
 
-#include <time.h>
-
 using namespace WebCore;
 
 class tst_Loading : public QObject
@@ -61,16 +59,15 @@ static int jobsToDo = 0;
 
 class Client : public ResourceHandleClient {
 public:
-    void didReceiveResponse(ResourceHandle* handle, const ResourceResponse&) {clock_gettime(CLOCK_MONOTONIC, &handle->m_responseTime); }
+    void didReceiveResponse(ResourceHandle* handle, const ResourceResponse&) { }
     void didReceiveData(ResourceHandle* handle, const char*, int, int) { }
     void didFinishLoading(ResourceHandle* handle)
     {
         --jobsToDo;
-        clock_gettime(CLOCK_MONOTONIC, &handle->m_finishTime);
         if (jobsToDo == 0)
             QCoreApplication::exit();
     }
-    void willSendRequest(ResourceHandle* handle, const ResourceRequest& req, const ResourceResponse& resp) { qWarning() << __PRETTY_FUNCTION__ << handle->request().url(); }
+    void willSendRequest(ResourceHandle* handle, const ResourceRequest& req, const ResourceResponse& resp) { qWarning() << Q_FUNC_INFO << handle->request().url(); }
 };
 
 static QList<ResourceHandle*> resourceHandles;
@@ -85,13 +82,6 @@ static void createJob(ResourceHandleClient* client, const QUrl& url)
 
     resourceHandles.append(handle);
     handlerList.append(handler);
-}
-
-static double time_diff(struct timespec _start, struct timespec _end)
-{
-    qint64 start = _start.tv_sec * 1000000000 + _start.tv_nsec;
-    qint64 end = _end.tv_sec * 1000000000 + _end.tv_nsec;
-    return (end - start) / 1000000000.0;
 }
 
 tst_Loading::~tst_Loading()

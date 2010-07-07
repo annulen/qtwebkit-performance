@@ -12,7 +12,11 @@ target.path += $$INSTALL_DIR/qtwebkit-benchmark
 INSTALLS += target
 
 INCLUDEPATH += $$PWD/common
-QMAKE_LIBDIR += $$PWD/common
+debug_and_release: {
+    CONFIG(debug, debug|release) QMAKE_LIBDIR += $$PWD/common/debug
+    else: QMAKE_LIBDIR += $$PWD/common/release
+} else:
+    QMAKE_LIBDIR += $$PWD/common
 
 !symbian: {
 LIBS += -lcommon
