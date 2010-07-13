@@ -26,23 +26,18 @@
 #include "databasetests.h"
 #include "webpage.h"
 
-#include <qdesktopwidget.h>
-#include <qwebframe.h>
-#include <qwebview.h>
-#include <qpainter.h>
-
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QIODevice>
-#include <QList>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QWebView>
 
-class tst_Cycler : public QObject
+class tst_cycler_one_qnetworkaccessmanager_with_pipelining : public QObject
 {
     Q_OBJECT
 
 public:
-    ~tst_Cycler();
+    ~tst_cycler_one_qnetworkaccessmanager_with_pipelining();
 
 public Q_SLOTS:
     void initTestCase();
@@ -54,83 +49,66 @@ private Q_SLOTS:
 
 private:
     QWebView* m_view;
-    WebPage* m_page;
 };
 
 class PipeliningNetworkAccessManager : public QNetworkAccessManager {
     Q_OBJECT
 
 public:
-    PipeliningNetworkAccessManager();
-    QNetworkReply* createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData);
-protected:
+    PipeliningNetworkAccessManager() {}
+    QNetworkReply* createRequest(Operation op, const QNetworkRequest & req, QIODevice* outgoingData);
 };
 
-PipeliningNetworkAccessManager::PipeliningNetworkAccessManager() : QNetworkAccessManager()
-{
-}
-
-QNetworkReply* PipeliningNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice * outgoingData)
+QNetworkReply* PipeliningNetworkAccessManager::createRequest(Operation op, const QNetworkRequest & req, QIODevice* outgoingData)
 {
     QNetworkRequest request = req;
-    request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true); // FIXME
-    QNetworkReply *r =  QNetworkAccessManager::createRequest(op, request, outgoingData);
-    return r;
+    request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
+    QNetworkReply* reply =  QNetworkAccessManager::createRequest(op, request, outgoingData);
+    return reply;
 }
 
-tst_Cycler::~tst_Cycler()
+tst_cycler_one_qnetworkaccessmanager_with_pipelining::~tst_cycler_one_qnetworkaccessmanager_with_pipelining()
 {
     benchmarkOutput();
 }
 
-void tst_Cycler::initTestCase()
+void tst_cycler_one_qnetworkaccessmanager_with_pipelining::initTestCase()
 {
     QWebSettings::globalSettings()->setMaximumPagesInCache(0);
     QWebSettings::globalSettings()->setObjectCacheCapacities(0, 0, 0);
 
     m_view = new QWebView;
-    m_page = new WebPage(m_view);
-    m_view->setPage(m_page);
+    WebPage* page = new WebPage(m_view);
+    m_view->setPage(page);
 
-    QSize viewportSize(1024, 768);
+    if (QSqlDatabase::database().isValid())
+        page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
+    else
+        page->setNetworkAccessManager(new PipeliningNetworkAccessManager);
+
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
-    m_page->setPreferredContentsSize(viewportSize);
-    const QSize screenSize = QApplication::desktop()->geometry().size();
-    m_view->setFixedSize(screenSize);
-    m_page->setViewportSize(screenSize);
+    const QSize viewportSize(1024, 768);
+    page->setPreferredContentsSize(viewportSize);
+    m_view->showFullScreen();
     m_view->window()->raise();
 #else
-    m_view->setFixedSize(viewportSize);
-    m_page->setViewportSize(viewportSize);
+    m_view->showMaximized();
 #endif
 
-    // FIXME pipelining for DatabaseNetworkAccessManager
-    if (QSqlDatabase::database().isValid())
-        m_page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
-    else
-        m_page->setNetworkAccessManager(new PipeliningNetworkAccessManager);
-
-
-    // this makes us different to the loading test...
-#if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
-    m_view->showFullScreen();
-#else
-    m_view->show();
-#endif
     QTest::qWaitForWindowShown(m_view);
 }
 
-void tst_Cycler::cleanupTestCase()
+void tst_cycler_one_qnetworkaccessmanager_with_pipelining::cleanupTestCase()
 {
     delete m_view;
 }
 
-void tst_Cycler::load_data()
+void tst_cycler_one_qnetworkaccessmanager_with_pipelining::load_data()
 {
     add_test_urls();
 }
 
-void tst_Cycler::load()
+void tst_cycler_one_qnetworkaccessmanager_with_pipelining::load()
 {
     QFETCH(QUrl, url);
 
@@ -144,5 +122,5 @@ void tst_Cycler::load()
     }
 }
 
-DBWEBTEST_MAIN(tst_Cycler)
+DBWEBTEST_MAIN(tst_cycler_one_qnetworkaccessmanager_with_pipelining)
 #include "tst_cycler_one_qnetworkaccessmanager_with_pipelining.moc"
