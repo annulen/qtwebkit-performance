@@ -53,7 +53,6 @@ private Q_SLOTS:
 
 private:
     QWebView* m_view;
-    WebPage* m_page;
 };
 
 tst_Painting::~tst_Painting()
@@ -64,24 +63,20 @@ tst_Painting::~tst_Painting()
 void tst_Painting::init()
 {
     m_view = new QWebView;
-    m_page = new WebPage(m_view);
-    m_view->setPage(m_page);
+    WebPage* page = new WebPage(m_view);
+    m_view->setPage(page);
 
-    QSize viewportSize(1024, 768);
 #if defined(Q_WS_MAEMO_5) || defined(Q_OS_SYMBIAN) || defined(Q_WS_QWS)
-    // screensize is a more typical rendering unit for embedded
-    m_page->setPreferredContentsSize(viewportSize);
-    const QSize screenSize = QApplication::desktop()->geometry().size();
-    m_view->setFixedSize(screenSize);
-    m_page->setViewportSize(screenSize);
+    const QSize viewportSize(1024, 768);
+    page->setPreferredContentsSize(viewportSize);
+    m_view->showFullScreen();
     m_view->window()->raise();
 #else
-    m_view->setFixedSize(viewportSize);
-    m_page->setViewportSize(viewportSize);
+    m_view->showMaximized();
 #endif
 
     if (QSqlDatabase::database().isValid())
-        m_page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
+        page->setNetworkAccessManager(new DatabaseNetworkAccessManager);
 }
 
 void tst_Painting::cleanup()
@@ -102,16 +97,16 @@ void tst_Painting::paint()
     ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
 
     /* force a layout */
-    QWebFrame* mainFrame = m_page->mainFrame();
+    QWebFrame* mainFrame = m_view->page()->mainFrame();
     mainFrame->toPlainText();
 
-    QPixmap pixmap(m_page->viewportSize());
+    QPixmap pixmap(m_view->page()->viewportSize());
 #if defined(Q_WS_X11)
     const bool needToSync = pixmap.paintEngine()->type() != QPaintEngine::Raster;
 #endif
     WEB_BENCHMARK("painting::paint", url.toString()) {
         QPainter painter(&pixmap);
-        mainFrame->render(&painter, QRect(QPoint(0, 0), m_page->viewportSize()));
+        mainFrame->render(&painter, QRect(QPoint(0, 0), pixmap.size()));
         painter.end();
 
 #if defined(Q_WS_X11)
@@ -137,7 +132,7 @@ void tst_Painting::fullPagePaint()
     ::waitForSignal(m_view, SIGNAL(loadFinished(bool)));
 
     /* force a layout */
-    QWebFrame* mainFrame = m_page->mainFrame();
+    QWebFrame* mainFrame = m_view->page()->mainFrame();
     mainFrame->toPlainText();
 
     QWebElement rootElement = mainFrame->documentElement();
