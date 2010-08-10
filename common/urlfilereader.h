@@ -26,9 +26,12 @@ QList<UrlInfo> readUrlList(QIODevice* device)
             continue;
 
         // load the urls
-        const int firstSeparator = qMin(line.indexOf('\t'), line.indexOf(' '));
-        if (firstSeparator > 0) {
-            QByteArray urlPart = line.left(firstSeparator);
+        const int firstTab = line.indexOf('\t');
+        const int firstSpace = line.indexOf(' ');
+        if (firstTab > 0 || firstSpace > 0) {
+            const int firstSeparator  = qMin((firstTab > 0) ? firstTab : line.length(),
+                                             (firstSpace > 0) ? firstSpace : line.length());
+            QByteArray urlPart = line.left(firstSeparator).trimmed();
             QByteArray descriptionPart = line.mid(firstSeparator).trimmed();
             result.append(UrlInfo(QUrl(QString::fromUtf8(urlPart)),
                                   QString::fromUtf8(descriptionPart)));
