@@ -37,10 +37,12 @@ class QString;
 class AbstractBenchmarkController {
 public:
     AbstractBenchmarkController(const QString& testName, const QString& dataName, Benchmark* parent, int iterations = defaultIterations);
-    virtual ~AbstractBenchmarkController() { m_parent->addBenchmark(m_benchmark); }
+    virtual ~AbstractBenchmarkController() { if (!m_aborted) m_parent->addBenchmark(m_benchmark); }
     virtual void next() { ++m_currentIteration; }
     int iterations() const { return m_iterations; }
     int currentIteration() const { return m_currentIteration; }
+
+    void abort() { m_aborted = true; }
 
     static void setDefaultIterations(int i) { defaultIterations = i; }
     static int defaultIterations;
@@ -58,6 +60,7 @@ protected:
 private:
     int m_currentIteration;
     const int m_iterations;
+    bool m_aborted;
 };
 
 

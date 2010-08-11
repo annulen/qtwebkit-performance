@@ -147,12 +147,12 @@ void tst_continuous_animation::webViewrendering()
     WEB_BENCHMARK_TIME_PER_FRAME("continuous_animation::webViewrendering", url.toString()) {
         m_page->triggerAction(QWebPage::Reload, true);
         if (!::waitForSignal(m_page, SIGNAL(loadFinished(bool)), 3000))
-            QSKIP("Unabled to reload the page in 3 seconds", SkipSingle);
+            ABORT_BENCHMARK("Unabled to reload the page in 3 seconds", SkipSingle);
 
         m_page->triggerAction(QWebPage::Reload, true);
         for (int i = 0; i < maxFrameCount; ++i) {
             if (!::waitForSignal(&view, SIGNAL(painted()), 3000))
-                QSKIP("Stalled: no new frames after 3 seconds", SkipSingle);
+                ABORT_BENCHMARK("Stalled: no new frames after 3 seconds", SkipSingle);
             web__controller.newFrame();
         }
     }
@@ -261,11 +261,11 @@ void tst_continuous_animation::runGraphicsViewBasedTest(WebWidget* view)
     WEB_BENCHMARK_TIME_PER_FRAME("continuous_animation::webViewrendering", url.toString()) {
         m_page->triggerAction(QWebPage::Reload, true);
         if (!::waitForSignal(m_page, SIGNAL(loadFinished(bool)), 3000))
-            QSKIP("Unabled to reload the page in 3 seconds", SkipSingle);
+            ABORT_BENCHMARK("Unabled to reload the page in 3 seconds", SkipSingle);
 
         for (int i = 0; i < maxFrameCount; ++i) {
             if (!::waitForSignal(view, SIGNAL(painted()), 3000))
-                QSKIP("Stalled: no new frames after 3 seconds", SkipSingle);
+                ABORT_BENCHMARK("Stalled: no new frames after 3 seconds", SkipSingle);
             web__controller.newFrame();
         }
     }

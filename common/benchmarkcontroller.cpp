@@ -25,6 +25,7 @@ AbstractBenchmarkController::AbstractBenchmarkController(const QString& testName
     , m_parent(parent)
     , m_currentIteration(0)
     , m_iterations(iterations)
+    , m_aborted(false)
 {
 }
 

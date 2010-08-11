@@ -34,6 +34,13 @@
 #include "benchmarkoutputwriter.h"
 #include <QSharedPointer>
 
+#define ABORT_BENCHMARK(statement, mode) \
+do {\
+    web__controller.abort();\
+    QTest::qSkip(statement, QTest::mode, __FILE__, __LINE__);\
+    return;\
+} while (0)
+
 /*
  * For generating the benchmark output
  */
