@@ -272,6 +272,9 @@ private Q_SLOTS:
     void pageLoaded(bool ok)
     {
         if (ok) {
+            if (mainFrame()->requestedUrl() == QUrl(QLatin1String("about:blank")))
+                return;
+
             QSqlQuery query;
             query.prepare("INSERT INTO mirrored_urls(url, description, date) VALUES(:url, :description, :date)");
             query.bindValue(":url", mainFrame()->requestedUrl());
@@ -387,8 +390,12 @@ int main(int argc, char **argv)
         QTimer timer;
         QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
         timer.setSingleShot(true);
-        timer.start(6000);
+        timer.start(8000);
         loop.exec();
+        // We need to reset the URL in order to load successive pages with fragments
+        // new pages
+        page->mainFrame()->load(QUrl(QLatin1String("about:blank")));
+        QApplication::processEvents();
     }
 
     /* continue mode for the poor */
