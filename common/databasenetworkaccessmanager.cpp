@@ -39,6 +39,10 @@ bool connectToDatabase(const QString& name)
 QNetworkReply* DatabaseNetworkAccessManager::createRequest(Operation op, const QNetworkRequest& req, QIODevice* outgoingData)
 {
     Q_UNUSED(outgoingData);
+
+    if (req.url().scheme() == QLatin1String("data"))
+        return QNetworkAccessManager::createRequest(op, req, outgoingData);
+
     DatabaseNetworkReply* reply = 0;
     if (op != GetOperation)
         reply = new DatabaseNetworkReply(QUrl());
