@@ -83,7 +83,7 @@ private Q_SLOTS:
     void mobileGraphicsWebViewrendering();
 
 private:
-    void runGraphicsViewBasedTest(WebWidget*);
+    void runGraphicsViewBasedTest(WebWidget*, const char*);
 
     QWebPage* m_page;
 };
@@ -216,7 +216,7 @@ void tst_continuous_animation::graphicsWebViewrendering_data()
 void tst_continuous_animation::graphicsWebViewrendering()
 {
     DesktopWebWidget desktopWidget;
-    runGraphicsViewBasedTest(&desktopWidget);
+    runGraphicsViewBasedTest(&desktopWidget, "continuous_animation::graphicsWebViewrendering");
 }
 
 class MobileWebWidget : public WebWidget
@@ -237,10 +237,10 @@ void tst_continuous_animation::mobileGraphicsWebViewrendering_data()
 void tst_continuous_animation::mobileGraphicsWebViewrendering()
 {
     MobileWebWidget mobileWebWidget;
-    runGraphicsViewBasedTest(&mobileWebWidget);
+    runGraphicsViewBasedTest(&mobileWebWidget, "continuous_animation::mobileGraphicsWebViewrendering");
 }
 
-void tst_continuous_animation::runGraphicsViewBasedTest(WebWidget* view)
+void tst_continuous_animation::runGraphicsViewBasedTest(WebWidget* view, const char* testName)
 {
     QFETCH(QUrl, url);
 
@@ -258,7 +258,7 @@ void tst_continuous_animation::runGraphicsViewBasedTest(WebWidget* view)
     QTest::qWaitForWindowShown(view);
     loadUrl(m_page, url);
 
-    WEB_BENCHMARK_TIME_PER_FRAME("continuous_animation::webViewrendering", url.toString()) {
+    WEB_BENCHMARK_TIME_PER_FRAME(testName, url.toString()) {
         m_page->triggerAction(QWebPage::Reload, true);
         if (!::waitForSignal(m_page, SIGNAL(loadFinished(bool)), 3000))
             ABORT_BENCHMARK("Unabled to reload the page in 3 seconds", SkipSingle);
