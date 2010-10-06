@@ -7,14 +7,17 @@ TESTNAMES = loading painting scrolling cycler layout \
             graphicspainting graphicsscrolling zooming \
             loading_one_qnetworkaccessmanager \
             cycler_one_qnetworkaccessmanager \
-            continuous_animation
 
 SUBDIRS += tests_loading tests_painting tests_scrolling tests_cycler tests_layout \
            tests_graphicspainting tests_graphicsscrolling tests_zooming \
            tests_loading_one_qnetworkaccessmanager \
            tests_cycler_one_qnetworkaccessmanager \
            tests_cycler_one_qnetworkaccessmanager_with_pipelining \
-           tests_continuous_animation
+
+!symbian: {
+TESTNAMES += continuous_animation
+SUBDIRS += tests_continuous_animation
+}
 
 tests_loading.subdir = tests/loading
 tests_loading.depends = common
