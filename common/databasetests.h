@@ -56,7 +56,7 @@ static void initUrlFromDatabase()
 
 QStringList mainImpl()
 {
-#if defined (Q_OS_SYMBIAN)
+#if defined (Q_OS_SYMBIAN) && defined (USE_DEFAULT_IAP)
     qt_SetDefaultIap();
 #endif
 
