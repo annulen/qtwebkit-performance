@@ -28,12 +28,12 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.EPOCSTACKSIZE = 0x14000
     TARGET.EPOCHEAPSIZE = 0x20000 \
-        0x4000000 \
+        0x10000000 \
         // \
         Min \
         128kB, \
         Max \
-        64MB
+        256MB
     TARGET.CAPABILITY = NetworkServices LocalServices ReadUserData WriteUserData UserEnvironment
 }
 
