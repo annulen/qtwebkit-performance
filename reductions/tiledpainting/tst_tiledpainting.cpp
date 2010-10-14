@@ -185,7 +185,7 @@ void tst_TiledPainting::qImageTiledPaint()
     mainFrame->toPlainText();
 
     QSize contentSize = m_view->page()->mainFrame()->contentsSize();
-    QImage image(maxTile, maxTile, QImage::Format_ARGB32);
+    QImage image(maxTile, maxTile, QImage::Format_ARGB32_Premultiplied);
     if (image.isNull())
         QSKIP("Invalid image", SkipSingle);
 
