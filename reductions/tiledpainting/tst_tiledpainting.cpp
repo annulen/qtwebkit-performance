@@ -233,7 +233,7 @@ public:
     bool m_active;
 };
 
-static NoOpPaintEngine sNoOpEngine;
+static NoOpPaintEngine sNoOpEngine(QPaintEngine::AllFeatures);
 
 extern int qt_defaultDpiX();
 extern int qt_defaultDpiY();
